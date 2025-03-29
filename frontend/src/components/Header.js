@@ -38,7 +38,6 @@ const Header = () => {
           <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
         </li>
         
-
         {userData ? (
           <>
             <li className="navbar-profile">
