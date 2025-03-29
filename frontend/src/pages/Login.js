@@ -1,147 +1,81 @@
-import axios from "axios";
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import "../App.css";
 
-const Login = () => {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
-  const navigate=useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // Validation function for email and password
-  const validateForm = () => {
-    const errors = {};
-    if (!email) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = "Please enter a valid email address";
-    }
-    if (!password) {
-      errors.password = "Password is required";
-    }
-    return errors;
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e) => {
+  function handleSubmit(e) {
     e.preventDefault();
+    setErrorMessage(""); // Clear previous error
 
-    // Validate form fields
-    // const validationErrors = validateForm();
-    // if (Object.keys(validationErrors).length > 0) {
-    //   setErrors(validationErrors);
-    //   return;
-    // }
+    fetch("http://localhost:5000/login-user", {
+      method: "POST",
+      crossDomain: true,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({ email, password }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "ok") {
+          alert("Login successful!");
+          localStorage.setItem("token", data.data);
+          localStorage.setItem("userType", data.userType);
+          localStorage.setItem("loggedIn", "true");
 
-    try {
-      // Make API request to login
-      const response = await axios.post("http://localhost:3000/api/auth/login", {
-        email,
-        password,
-      });
-
-      if (response.data.success) {
-        console.log(response);
-        
-        toast.success("Login successful!");
-        // Redirect or save token as needed
-        const token = response.data.token;
-        console.log(token);
-        
-        sessionStorage.setItem("authToken", token);
-        navigate('/homeScreen')
-        fetchUserDetails();
-      } else {
-        toast.error(response.data.message || "Login failed");
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
-      toast.error(error.response.data.message || "Something went wrong. Please try again later.");
-    }
-  };
-
- 
-
-  // useEffect(() => {
-    
-  // }, []);
-  const fetchUserDetails = async () => {
-    try {
-      // Retrieve token from localStorage or other secure storage
-      const token = sessionStorage.getItem('authToken'); // Replace with actual token retrieval
-      console.log(token);
-      
-      if (!token) {
-        // setError('User is not logged in');
-        return;
-      }
-
-      // Make the API request with the token in the Authorization header
-      const response = await axios.get('http://localhost:3000/api/auth/get-userDetails', {
-        headers: {
-          Authorization: `Bearer ${token}`
+          window.location.href =
+            data.userType === "Admin" ? "./admin-dashboard" : "./userDetails";
+        } else {
+          setErrorMessage("Invalid email or password. Please try again.");
         }
-      });
-
-      console.log(response);
-      
-      if (response.data.success) {
-        console.log(response.data.user);
-      } else {
-        console.log(response.data.message || 'Failed to fetch user details');
-      }
-    } catch (err) {
-      console.error('Error fetching user details:', err);
-      console.log(err.response?.data?.message || 'An error occurred');
-    }
-  };
-
-  // fetchUserDetails();
+      })
+      .catch(() => setErrorMessage("Something went wrong. Please try again."));
+  }
 
   return (
     <div className="login-container">
-      <h2>Login</h2>
       <form onSubmit={handleSubmit}>
+        <h3>Login</h3>
+
         <div className="form-group">
-          <label>Email</label>
+          <label>Email address</label>
           <input
             type="email"
-            name="email"
-            placeholder="Enter your email"
+            className="form-control"
+            placeholder="Enter email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
-          {errors.email && <span className="error-message">{errors.email}</span>}
         </div>
+
         <div className="form-group">
           <label>Password</label>
           <input
             type="password"
-            name="password"
-            placeholder="Enter your password"
+            className="form-control"
+            placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
-          {errors.password && <span className="error-message">{errors.password}</span>}
         </div>
+
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+
         <button type="submit" className="login-btn">
-          Login
+          Submit
         </button>
+
+        <p className="forgot-password">
+          Don't have an account? <a href="/signup">Register</a>
+        </p>
       </form>
-      
-      <p style={{ textAlign: "center" }}>
-        Don't have an account?{" "}
-        <Link
-          to="/signUp"
-          className="toggle-link"
-          style={{ color: "#007BFF", textDecoration: "underline" }}
-        >
-          Sign Up
-        </Link>
-      </p>
     </div>
   );
-};
-
-export default Login;
+}

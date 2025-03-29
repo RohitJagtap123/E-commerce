@@ -1,145 +1,112 @@
-import axios from "axios";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import UserModel from "../model/userModel";
+import "../App.css";
 
-const SignUp = () => {
-  const [formValues, setFormValues] = useState(new UserModel({}));
+export default function SignUp() {
+  const [fname, setFname] = useState("");
+  const [lname, setLname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [userType, setUserType] = useState("");
+  const [secretKey, setSecretKey] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const [formErrors, setFormErrors] = useState({});
-
-  const validateForm = () => {
-    const errors = {};
-
-    if (!formValues.username) {
-      errors.username = "Username is required";
-    } else if (!/^[A-Za-z0-9_]{3,15}$/.test(formValues.username)) {
-      errors.username =
-        "Username should be 3-15 characters long and can only contain letters, numbers, and underscores.';";
-    }
-
-    if(!formValues.email){
-errors.email="Email is required"
-    }else if(!/\S+@\S+\.\S+/.test(formValues.email)){
-      errors.email="Please enter a valid email address"
-    }
-    if (!formValues.mobile) {
-      errors.mobile = 'Mobile number is required';
-    } else if (!/^\d{10}$/.test(formValues.mobile)) {
-      errors.mobile = 'Mobile number should be 10 digits';
-    }
-
-    if (!formValues.password) {
-      errors.password = 'Password is required';
-    }
-return errors;
-
-  };
-
-
-  const handleSubmit=async (e)=>{
+  const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formValues);
-    
-    const errors=validateForm();
-    console.log(errors);
-    if(Object.keys(errors).length===0){
-      // alert("Form submitted")
-    }else{
-      // alert("Form Submission Failed");
-      setFormErrors(errors);
+    if (userType === "Admin" && secretKey !== "AdarshT") {
+      setErrorMessage("Invalid Admin");
+      return;
     }
-    try {
-      const response = await axios.post("http://localhost:3000/api/auth/register-user", formValues);
-      console.log(response, 'res');
 
-      if (response.data.success) {
-          toast.success(response.data.message || 'Registration successful!');
-          setFormValues({username:"",email:"",mobile:"",password:""});
-          setFormErrors("");
-      } else {
-          toast.error(response.data.message || 'Registration failed!');
-      }
-  } catch (error) {
-      console.error('Error during registration:', error);
-      toast.error(error.response.data.message || "Something went wrong. Please try again later.");
-  }
-    
-    
-
-  }
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-    
+    fetch("http://localhost:5000/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ fname, lname, email, password, userType }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "ok") {
+          alert("Registration Successful");
+        } else {
+          setErrorMessage("Something went wrong");
+        }
+      })
+      .catch(() => setErrorMessage("Server error. Please try again later."));
   };
+
   return (
     <div className="login-container">
-      <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
+        <h3>Register</h3>
+        <div className="login-tabs">
+          <label>
+            <input
+              type="radio"
+              name="UserType"
+              value="User"
+              onChange={(e) => setUserType(e.target.value)}
+            />
+            User
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="UserType"
+              value="Admin"
+              onChange={(e) => setUserType(e.target.value)}
+            />
+            Admin
+          </label>
+        </div>
+        {userType === "Admin" && (
+          <div className="form-group">
+            <label>Secret Key</label>
+            <input
+              type="text"
+              placeholder="Secret Key"
+              onChange={(e) => setSecretKey(e.target.value)}
+            />
+          </div>
+        )}
         <div className="form-group">
-          <label>Username</label>
+          <label>First Name</label>
           <input
             type="text"
-            placeholder="Enter your username"
-            name="username"
-            value={formValues.username}
-            onChange={handleInputChange}
-           
+            placeholder="First Name"
+            onChange={(e) => setFname(e.target.value)}
           />
-         {formErrors.username?<span className="error-message">{formErrors.username}</span>:''} 
         </div>
         <div className="form-group">
-          <label>Email</label>
+          <label>Last Name</label>
+          <input
+            type="text"
+            placeholder="Last Name"
+            onChange={(e) => setLname(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>Email Address</label>
           <input
             type="email"
-            name="email"
-            placeholder="Enter your email"
-            value={formValues.email}
-            onChange={handleInputChange}
+            placeholder="Enter email"
+            onChange={(e) => setEmail(e.target.value)}
           />
-          {formErrors.email?<span className="error-message">{formErrors.email}</span>:''} 
-        </div>
-        <div className="form-group">
-          <label>Mobile No</label>
-          <input
-            type="tel"
-            name="mobile"
-            placeholder="Enter your mobile number"
-            value={formValues.mobile}
-            onChange={handleInputChange}
-          />
-          {formErrors.mobile?<span className="error-message">{formErrors.mobile}</span>:''} 
         </div>
         <div className="form-group">
           <label>Password</label>
           <input
             type="password"
-            name="password"
-            placeholder="Enter your password"
-            value={formValues.password}
-            onChange={handleInputChange}
+            placeholder="Enter password"
+            onChange={(e) => setPassword(e.target.value)}
           />
-          {formErrors.password?<span className="error-message">{formErrors.password}</span>:''} 
         </div>
-        <button type="submit" className="login-btn">
-          Sign Up
-        </button>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+        <button type="submit" className="login-btn">Register</button>
+        <p className="forgot-password text-right">
+          Already registered? <a href="/login">Login</a>
+        </p>
       </form>
-      <p style={{ textAlign: "center" }}>
-        Already have an account?{" "}
-        <Link
-          to="/login"
-          className="toggle-link"
-          style={{ color: "#007BFF", textDecoration: "underline" }}
-        >
-          Login
-        </Link>
-      </p>
     </div>
   );
-};
-
-export default SignUp;
+}
