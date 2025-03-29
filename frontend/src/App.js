@@ -8,10 +8,9 @@ import UserDetails from "./pages/userDetails";
 import Home from "./pages/Home";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-
-const Login = lazy(() => import("./pages/Login"));
-const Signup = lazy(() => import("./pages/Signup"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import NotFound from "./pages/NotFound";
 
 function App() {
   const isLoggedIn = window.localStorage.getItem("loggedIn"); // Check if logged in
