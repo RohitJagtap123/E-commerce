@@ -1,248 +1,65 @@
-const express = require("express");
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+
+// Initialize Express app
 const app = express();
-const mongoose = require("mongoose");
-app.use(express.json());
-const cors = require("cors");
+
+// Middleware
 app.use(cors());
-const bcrypt = require("bcryptjs");
-app.set("view engine", "ejs");
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-const jwt = require("jsonwebtoken");
-var nodemailer = require("nodemailer");
+// Database connection
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/shaktietech', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => console.error('MongoDB connection error:', err));
 
-const JWT_SECRET =
-  "hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe";
+// Form Submission Model (models/FormSubmission.js)
+const formSubmissionSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  phone: { type: String },
+  message: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+const FormSubmission = mongoose.model('FormSubmission', formSubmissionSchema);
 
-const mongoUrl =
-  "mongodb+srv://rohitjagtap:rohit2004@cluster0.5ikb0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-mongoose
-  .connect(mongoUrl, {
-    useNewUrlParser: true,
-  })
-  .then(() => {
-    console.log("Connected to database");
-  })
-  .catch((e) => console.log(e));
-
-require("./userDetails");
-
-const User = mongoose.model("UserInfo");
-app.post("/register", async (req, res) => {
-  const { fname, lname, email, password, userType } = req.body;
-
-  const encryptedPassword = await bcrypt.hash(password, 10);
+// Routes
+// Submit form data
+app.post('/api/submissions', async (req, res) => {
   try {
-    const oldUser = await User.findOne({ email });
-
-    if (oldUser) {
-      return res.json({ error: "User Exists" });
-    }
-    await User.create({
-      fname,
-      lname,
-      email,
-      password: encryptedPassword,
-      userType,
-    });
-    res.send({ status: "ok" });
+    const { name, email, phone, message } = req.body;
+    const submission = new FormSubmission({ name, email, phone, message });
+    await submission.save();
+    res.status(201).send(submission);
   } catch (error) {
-    res.send({ status: "error" });
+    res.status(400).send({ error: error.message });
   }
 });
 
-app.post("/login-user", async (req, res) => {
-  const { email, password } = req.body;
-
-  const user = await User.findOne({ email });
-  if (!user) {
-    return res.json({ error: "User Not found" });
-  }
-  if (await bcrypt.compare(password, user.password)) {
-    const token = jwt.sign({ email: user.email }, JWT_SECRET, {
-      expiresIn: "15m",
-    });
-
-    if (res.status(201)) {
-      return res.json({ status: "ok", data: token });
-    } else {
-      return res.json({ error: "error" });
-    }
-  }
-  res.json({ status: "error", error: "InvAlid Password" });
-});
-
-app.post("/userData", async (req, res) => {
-  const { token } = req.body;
+// Get all submissions (no auth needed since you're handling auth in frontend)
+app.get('/api/submissions', async (req, res) => {
   try {
-    const user = jwt.verify(token, JWT_SECRET, (err, res) => {
-      if (err) {
-        return "token expired";
-      }
-      return res;
-    });
-    console.log(user);
-    if (user == "token expired") {
-      return res.send({ status: "error", data: "token expired" });
-    }
-
-    const useremail = user.email;
-    User.findOne({ email: useremail })
-      .then((data) => {
-        res.send({ status: "ok", data: data });
-      })
-      .catch((error) => {
-        res.send({ status: "error", data: error });
-      });
-  } catch (error) {}
-});
-
-app.listen(5000, () => {
-  console.log("Server Started");
-});
-
-app.post("/forgot-password", async (req, res) => {
-  const { email } = req.body;
-  try {
-    const oldUser = await User.findOne({ email });
-    if (!oldUser) {
-      return res.json({ status: "User Not Exists!!" });
-    }
-    const secret = JWT_SECRET + oldUser.password;
-    const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, secret, {
-      expiresIn: "5m",
-    });
-    const link = `http://localhost:5000/reset-password/${oldUser._id}/${token}`;
-    var transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "adarsh438tcsckandivali@gmail.com",
-        pass: "rmdklolcsmswvyfw",
-      },
-    });
-
-    var mailOptions = {
-      from: "youremail@gmail.com",
-      to: "thedebugarena@gmail.com",
-      subject: "Password Reset",
-      text: link,
-    };
-
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
-    console.log(link);
-  } catch (error) {}
-});
-
-app.get("/reset-password/:id/:token", async (req, res) => {
-  const { id, token } = req.params;
-  console.log(req.params);
-  const oldUser = await User.findOne({ _id: id });
-  if (!oldUser) {
-    return res.json({ status: "User Not Exists!!" });
-  }
-  const secret = JWT_SECRET + oldUser.password;
-  try {
-    const verify = jwt.verify(token, secret);
-    res.render("index", { email: verify.email, status: "Not Verified" });
+    const submissions = await FormSubmission.find().sort({ createdAt: -1 });
+    res.send(submissions);
   } catch (error) {
-    console.log(error);
-    res.send("Not Verified");
+    res.status(500).send({ error: error.message });
   }
 });
 
-app.post("/reset-password/:id/:token", async (req, res) => {
-  const { id, token } = req.params;
-  const { password } = req.body;
-
-  const oldUser = await User.findOne({ _id: id });
-  if (!oldUser) {
-    return res.json({ status: "User Not Exists!!" });
-  }
-  const secret = JWT_SECRET + oldUser.password;
-  try {
-    const verify = jwt.verify(token, secret);
-    const encryptedPassword = await bcrypt.hash(password, 10);
-    await User.updateOne(
-      {
-        _id: id,
-      },
-      {
-        $set: {
-          password: encryptedPassword,
-        },
-      }
-    );
-
-    res.render("index", { email: verify.email, status: "verified" });
-  } catch (error) {
-    console.log(error);
-    res.json({ status: "Something Went Wrong" });
-  }
+// Simple route for testing
+app.get('/', (req, res) => {
+  res.send('ShaktiETech Backend Server');
 });
 
-app.get("/getAllUser", async (req, res) => {
-  let query = {};
-  const searchData = req.query.search;
-  if (searchData) {
-    query = {
-      $or: [
-        { fname: { $regex: searchData, $options: "i" } },
-        { email: { $regex: searchData, $options: "i" } },
-      ],
-    };
-  }
-
-  try {
-    const allUser = await User.find(query);
-    res.send({ status: "ok", data: allUser });
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-app.post("/deleteUser", async (req, res) => {
-  const { userid } = req.body;
-  try {
-    User.deleteOne({ _id: userid }, function (err, res) {
-      console.log(err);
-    });
-    res.send({ status: "Ok", data: "Deleted" });
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-
-
-app.get("/paginatedUsers", async (req, res) => {
-  const allUser = await User.find({});
-  const page = parseInt(req.query.page);
-  const limit = parseInt(req.query.limit);
-
-  const startIndex = (page - 1) * limit;
-  const lastIndex = page * limit;
-
-  const results = {};
-  results.totalUser = allUser.length;
-  results.pageCount = Math.ceil(allUser.length / limit);
-
-  if (lastIndex < allUser.length) {
-    results.next = {
-      page: page + 1,
-    };
-  }
-  if (startIndex > 0) {
-    results.prev = {
-      page: page - 1,
-    };
-  }
-  results.result = allUser.slice(startIndex, lastIndex);
-  res.json(results);
+// Server port configuration
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
