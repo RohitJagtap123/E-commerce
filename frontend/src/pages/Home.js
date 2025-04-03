@@ -1,107 +1,196 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-scroll';
+import { FiSun, FiMoon } from 'react-icons/fi';
 
-import andonControl1 from '../assets/andon control 1.png';
-import codeBlueCallPoint from '../assets/Code Blue medical emergancy call point .png';
-import codeBlueEmergencyPoint from '../assets/Code Blue medical emergancy point.png';
+// Import all product images
+import andonControl1 from '../assets/andon control 1.jpg';
+import analogTransmitter1 from '../assets/analog input trasmeter 2.png';
+import analogTransmitter2 from '../assets/analog input trasmeter 3.png';
+import batteryEliminator from '../assets/battery eliminator paqnel 1.png';
+import continuityPanel from '../assets/cb contuanity testing panel 2.png';
+import continuityUnit1 from '../assets/contuanity testing unit 1.png';
+import continuityUnit2 from '../assets/contuanity testing unit 2.png';
 import dataLogger16Ch from '../assets/data logger 16 ch.png';
 import dataLogger from '../assets/data looger.jpg';
-import dataLoggerRs485 from '../assets/deta logger 16 ch.png';
-import mhmsDashboard from '../assets/mhms .png';
+import medicalCallPoint from '../assets/medical emergancy call point .png';
+import medicalEmergencyPoint from '../assets/medical emergancy point.png';
+import mhmsDashboard from '../assets/mhms 4 .png';
 import mhmsSystem from '../assets/mhms 5.png';
+import vltMeter from '../assets/vlt ir rejection meter 2.jpg';
 import shaktiLogo from '../assets/shakti full logo trac.png';
+import hmiTouchScreen from '../assets/hmi touch screen 1.png';
+import solarEnergyMeter from '../assets/solar energy meter 1.png';
+import fuelGaugeUnit from '../assets/fuel gaege testing unit big .png';
+
+// Background images for slideshow (selected cool ones)
+import bg1 from '../assets/hmi touch screen 1.png';
+import bg2 from '../assets/mhms 5.png';
+import bg3 from '../assets/solar energy meter 1.png';
+import bg4 from '../assets/fuel gaege testing unit big .png';
+import bg5 from '../assets/andon control 1.jpg';
 
 function Home() {
-  const [expandedService, setExpandedService] = useState(null);
-  const [showTestimonialPopup, setShowTestimonialPopup] = useState(false);
-  const [showContactPopup, setShowContactPopup] = useState(false);
-  const [currentClientIndex, setCurrentClientIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState('services');
-  const [currentImageIndices, setCurrentImageIndices] = useState({});
+  const [currentBgIndex, setCurrentBgIndex] = useState(0);
+  const [modalContent, setModalContent] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const backgroundImages = [bg1, bg2, bg3, bg4, bg5];
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const navItems = [
+    { id: 'welcome', label: 'Home' },
+    { id: 'about', label: 'About Us' },
+    { id: 'services', label: 'Services' },
+    { id: 'products', label: 'Products' },
+    { id: 'industries', label: 'Industries' },
+    { id: 'clients', label: 'Clients' },
+    { id: 'contact', label: 'Contact' }
+  ];
 
   const services = [
     {
       title: "PLC Panels & Automation",
       icon: "⚙",
-      description: "We design and develop high-performance Programmable Logic Controller (PLC) panels for industrial automation.",
+      description: "We specialize in designing and developing high-performance Programmable Logic Controller (PLC) panels for industrial automation. With 18 years of experience, we've delivered solutions to manufacturing, automotive, pharmaceutical and other industries.",
       features: [
-        "Custom-built PLC panels",
-        "Seamless integration",
-        "Brands: Siemens, Allen-Bradley, Schneider"
-      ]
+        "Custom-built PLC panels for specific industry needs",
+        "Seamless integration with existing systems",
+        "Brands we work with: Siemens, Allen-Bradley, Schneider, Mitsubishi, Delta",
+        "Reliable after-sales support and maintenance"
+      ],
+      images: [hmiTouchScreen]
     },
     {
-      title: "Touch Screen Panels",
+      title: "Touch Screen Panels (HMI)",
       icon: "👆",
-      description: "Our Human-Machine Interface (HMI) panels offer intuitive control and real-time data visualization.",
+      description: "Our Human-Machine Interface (HMI) panels are designed for intuitive operation in industrial environments with real-time data visualization capabilities.",
       features: [
-        "Custom GUI design",
-        "PLC & SCADA integration",
-        "Industrial-grade screens"
-      ]
+        "Custom GUI design tailored to your workflow",
+        "Integration with PLC & SCADA systems",
+        "Rugged, industrial-grade touch screens",
+        "User-friendly interfaces for easy monitoring"
+      ],
+      images: [hmiTouchScreen]
     },
     {
       title: "Control Panels",
       icon: "🎛",
-      description: "We provide custom-built control panels for various industrial applications.",
+      description: "From motor control centers to specialized testing panels, we provide complete control solutions for industrial automation.",
       features: [
-        "Motor control solutions",
-        "Safety-compliant designs",
-        "Tailored automation"
-      ]
+        "Testing control & motor control solutions",
+        "Safety-compliant designs meeting industry standards",
+        "Tailored solutions for unique applications",
+        "High-quality components for reliability"
+      ],
+      images: [continuityPanel]
     },
     {
       title: "Testing Equipment",
       icon: "🔍",
-      description: "Precision testing equipment for electrical and electronic industries.",
+      description: "We develop precision testing equipment for quality control in electrical and electronic industries.",
       features: [
-        "Automated testing rigs",
-        "R&D lab solutions",
-        "Calibration systems"
-      ]
+        "Automated testing rigs for electronics",
+        "Customized solutions for R&D labs",
+        "Calibration & reliability testing systems",
+        "Data logging and analysis capabilities"
+      ],
+      images: [fuelGaugeUnit]
     }
   ];
 
   const products = [
     {
       title: "Andon Control System",
-      description: "Real-time monitoring solution for conveyor belt operations with stoppage logging and analysis.",
+      description: "Real-time monitoring solution for production lines with stoppage logging and analysis.",
       features: [
-        "Real-time Monitoring",
-        "Stoppage Logging",
-        "Accountability Tracking",
-        "Historical Data Analysis"
+        "Real-time Monitoring of conveyor status",
+        "Stoppage Logging with duration tracking",
+        "Accountability Tracking for operators",
+        "Historical Data Analysis for process improvement"
       ],
       images: [andonControl1]
     },
     {
-      title: "Machine Health Monitoring",
-      description: "Advanced solution to monitor and analyze key health parameters of industrial machines.",
+      title: "Continuity Testing Unit",
+      description: "Advanced testing solution for electrical circuits with multiple configurations.",
       features: [
-        "Early issue detection",
-        "Proactive maintenance",
-        "Real-time tracking"
+        "Multiple testing modes (9X9, 4X4, 2X2)",
+        "Precision measurement capabilities",
+        "Robust industrial design",
+        "Easy-to-use interface"
+      ],
+      images: [continuityUnit1, continuityUnit2]
+    },
+    {
+      title: "Data Loggers System",
+      description: "Advanced data acquisition for industrial monitoring.",
+      features: [
+        "Multi-sensor support (temp, pressure, etc.)",
+        "High-capacity data storage",
+        "Trend analysis capabilities",
+        "Industrial-grade reliability"
+      ],
+      images: [dataLogger16Ch, dataLogger]
+    },
+    {
+      title: "Machine Health Monitoring",
+      description: "Predictive maintenance system for industrial equipment.",
+      features: [
+        "Real-time parameter monitoring",
+        "Early fault detection",
+        "Maintenance alerts",
+        "Performance analytics"
       ],
       images: [mhmsDashboard, mhmsSystem]
     },
     {
-      title: "Data Loggers System",
-      description: "Highly efficient data recording solution that captures and stores sensor data.",
+      title: "Medical Emergency System",
+      description: "Code Blue emergency response system for healthcare facilities.",
       features: [
-        "Multi-sensor support",
-        "Comprehensive storage",
-        "Trend analysis"
+        "Rapid activation with call points",
+        "Real-time alerting system",
+        "Response time tracking",
+        "Hospital-wide integration"
       ],
-      images: [dataLogger16Ch, dataLogger, dataLoggerRs485]
+      images: [medicalCallPoint, medicalEmergencyPoint]
     },
     {
-      title: "Code Blue Systems",
-      description: "Enhances emergency medical responses.",
+      title: "VLT & IR Rejection Meter",
+      description: "Precision measurement device for optical properties.",
       features: [
-        "Rapid activation",
-        "Real-time alerting",
-        "Performance tracking"
+        "Accurate visible light transmission measurement",
+        "Infrared rejection testing",
+        "Easy operation with hold function",
+        "Industrial-grade construction"
       ],
-      images: [codeBlueCallPoint, codeBlueEmergencyPoint]
+      images: [vltMeter]
+    },
+    {
+      title: "Solar Energy Meter",
+      description: "Advanced monitoring system for solar power installations.",
+      features: [
+        "Real-time energy production tracking",
+        "Efficiency analysis",
+        "Remote monitoring capabilities",
+        "Weather-resistant design"
+      ],
+      images: [solarEnergyMeter]
+    },
+    {
+      title: "Fuel Gauge Testing Unit",
+      description: "Precision testing equipment for fuel level indicators.",
+      features: [
+        "Multiple calibration modes",
+        "High accuracy measurement",
+        "Automated testing sequences",
+        "Durable industrial construction"
+      ],
+      images: [fuelGaugeUnit]
     }
   ];
 
@@ -109,545 +198,888 @@ function Home() {
     {
       name: "Bajaj Auto Limited",
       location: "Waluj, Chh. Sambhajinagar",
-      testimonial: "Shakti's automation solutions increased our production efficiency by 30%."
+      testimonial: "Shakti's automation solutions increased our production efficiency by 30% while reducing downtime by 45%."
     },
     {
       name: "Garware Polyester Limited",
       location: "Chikalthana, Chh. Sambhajinagar",
-      testimonial: "Their control panels have been running flawlessly for 5+ years."
+      testimonial: "Their control panels have been running flawlessly for 5+ years with minimal maintenance requirements."
     },
     {
       name: "Siemens Ltd.",
       location: "Waluj, Chh. Sambhajinagar",
-      testimonial: "Excellent technical support and reliable products."
+      testimonial: "Excellent technical support and reliable products that integrate seamlessly with our existing systems."
     }
   ];
 
   const industries = [
-    { name: "Manufacturing", icon: "🏭" },
-    { name: "Automotive", icon: "🚗" },
-    { name: "Pharmaceutical", icon: "💊" },
-    { name: "Food Processing", icon: "🍔" },
-    { name: "Power & Energy", icon: "⚡" },
-    { name: "R&D Labs", icon: "🔬" }
+    { name: "Manufacturing", icon: "🏭", description: "Custom automation for production lines" },
+    { name: "Automotive", icon: "🚗", description: "Robotics and assembly line solutions" },
+    { name: "Pharmaceutical", icon: "💊", description: "Precision control for sensitive processes" },
+    { name: "Food Processing", icon: "🍔", description: "Hygienic and efficient automation" },
+    { name: "Power & Energy", icon: "⚡", description: "Reliable control for critical systems" },
+    { name: "Healthcare", icon: "🏥", description: "Medical equipment control systems" },
+    { name: "Renewable Energy", icon: "🌞", description: "Solar monitoring solutions" },
+    { name: "R&D Labs", icon: "🔬", description: "Specialized testing equipment" }
   ];
 
-  const toggleService = (index) => {
-    setExpandedService(expandedService === index ? null : index);
+  // Auto-rotate background images
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBgIndex((prev) => (prev + 1) % backgroundImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const openModal = (content) => {
+    setModalContent(content);
+    setIsModalOpen(true);
+    document.body.style.overflow = 'hidden';
   };
 
-  const showNextClient = () => {
-    setCurrentClientIndex((prev) => (prev + 1) % clients.length);
+  const closeModal = () => {
+    setIsModalOpen(false);
+    document.body.style.overflow = 'auto';
   };
 
-  const showPrevClient = () => {
-    setCurrentClientIndex((prev) => (prev - 1 + clients.length) % clients.length);
+  const themeStyles = {
+    light: {
+      backgroundColor: '#ffffff',
+      textColor: '#333333',
+      sectionBackground: '#f9f9f9',
+      cardBackground: '#ffffff',
+      buttonColor: '#d32f2f'
+    },
+    dark: {
+      backgroundColor: '#121212',
+      textColor: '#f5f5f5',
+      sectionBackground: '#1e1e1e',
+      cardBackground: '#2d2d2d',
+      buttonColor: '#ff5252'
+    }
   };
 
-  const openContactPopup = () => {
-    setShowContactPopup(true);
-    setShowTestimonialPopup(false);
-  };
+  const currentTheme = darkMode ? themeStyles.dark : themeStyles.light;
 
-  const openTestimonialPopup = () => {
-    setShowTestimonialPopup(true);
-    setShowContactPopup(false);
-  };
-
-  const showNextImage = (productIndex) => {
-    setCurrentImageIndices(prev => ({
-      ...prev,
-      [productIndex]: ((prev[productIndex] || 0) + 1) % products[productIndex].images.length
-    }));
-  };
-
-  const showPrevImage = (productIndex) => {
-    setCurrentImageIndices(prev => ({
-      ...prev,
-      [productIndex]: ((prev[productIndex] || 0) - 1 + products[productIndex].images.length) % 
-                     products[productIndex].images.length
-    }));
-  };
-
-  // Styles
   const styles = {
     container: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      color: '#333',
+      color: currentTheme.textColor,
+      backgroundColor: currentTheme.backgroundColor,
       lineHeight: 1.6,
-      maxWidth: '100%',
-      overflowX: 'hidden'
+      overflowX: 'hidden',
+      transition: 'all 0.3s ease'
     },
-    hero: {
-      background: 'linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%)',
-      color: 'white',
-      padding: '80px 20px',
-      textAlign: 'center',
-      position: 'relative'
-    },
-    section: {
-      padding: '60px 20px',
-      maxWidth: '1200px',
-      margin: '0 auto'
-    },
-    sectionTitle: {
-      fontSize: '2rem',
-      textAlign: 'center',
-      marginBottom: '30px',
-      color: '#d32f2f',
-      position: 'relative'
-    },
-    ctaButton: {
-      background: '#0288d1',
+    themeToggleButton: {
+      position: 'fixed',
+      bottom: '20px',
+      right: '20px',
+      background: currentTheme.buttonColor,
       color: 'white',
       border: 'none',
-      padding: '12px 30px',
+      borderRadius: '50%',
+      width: '50px',
+      height: '50px',
+      fontSize: '20px',
+      cursor: 'pointer',
+      boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1000,
+      transition: 'all 0.3s ease',
+      ':hover': {
+        transform: 'scale(1.1)'
+      }
+    },
+    section: {
+      minHeight: '100vh',
+      padding: '80px 20px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'relative',
+      scrollSnapAlign: 'start'
+    },
+    welcomeSection: {
+      color: 'white',
+      textAlign: 'center',
+      overflow: 'hidden'
+    },
+    slideshowContainer: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 0
+    },
+    slideshowImage: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      filter: 'blur(4px) brightness(0.6)',
+      transition: 'opacity 1s ease-in-out'
+    },
+    slideshowOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'rgba(0,0,0,0.3)',
+      zIndex: 1
+    },
+    welcomeContent: {
+      maxWidth: '800px',
+      margin: '0 auto',
+      position: 'relative',
+      zIndex: 2,
+      padding: '0 20px'
+    },
+    logoImage: {
+      maxWidth: '200px',
+      marginBottom: '30px',
+      filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'
+    },
+    mainHeading: {
+      fontSize: '3rem',
+      fontWeight: 'bold',
+      margin: '10px 0',
+      textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+      lineHeight: '1.2'
+    },
+    subHeading: {
+      fontSize: '2.2rem',
+      fontWeight: 'bold',
+      margin: '10px 0 30px',
+      textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+    },
+    learnMoreButton: {
+      background: 'white',
+      color: '#d32f2f',
+      border: 'none',
+      padding: '15px 40px',
       fontSize: '1.1rem',
       borderRadius: '30px',
       cursor: 'pointer',
       fontWeight: 'bold',
-      transition: 'all 0.3s ease'
+      marginTop: '30px',
+      boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+      transition: 'all 0.3s ease',
+      ':hover': {
+        transform: 'translateY(-3px)',
+        boxShadow: '0 6px 20px rgba(0,0,0,0.3)'
+      },
+      textDecoration: 'none',
+      display: 'inline-block'
     },
-    popupOverlay: {
+    sectionTitle: {
+      fontSize: '2.5rem',
+      marginBottom: '50px',
+      color: currentTheme.buttonColor,
+      textAlign: 'center',
+      position: 'relative',
+      ':after': {
+        content: '""',
+        display: 'block',
+        width: '80px',
+        height: '4px',
+        background: '#0288d1',
+        margin: '15px auto 0'
+      }
+    },
+    aboutContainer: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '40px',
+      alignItems: 'center',
+      maxWidth: '1200px',
+      margin: '0 auto'
+    },
+    aboutContent: {
+      flex: 1,
+      minWidth: '300px',
+      fontSize: '1.1rem',
+      lineHeight: '1.8'
+    },
+    aboutLogo: {
+      width: '100%',
+      maxWidth: '400px',
+      height: 'auto',
+      objectFit: 'contain',
+      borderRadius: '8px',
+      boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+    },
+    missionBox: {
+      backgroundColor: darkMode ? '#2d2d2d' : '#e3f2fd',
+      padding: '25px',
+      borderRadius: '8px',
+      marginTop: '30px',
+      borderLeft: '5px solid #0288d1',
+      boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
+    },
+    servicesGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+      gap: '25px',
+      maxWidth: '1200px',
+      margin: '0 auto'
+    },
+    serviceCard: {
+      background: currentTheme.cardBackground,
+      borderRadius: '8px',
+      overflow: 'hidden',
+      boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
+      transition: 'all 0.3s ease',
+      cursor: 'pointer',
+      ':hover': {
+        transform: 'translateY(-10px)',
+        boxShadow: '0 15px 30px rgba(0,0,0,0.15)'
+      }
+    },
+    serviceHeader: {
+      padding: '25px',
+      background: '#0288d1',
+      color: 'white',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '15px'
+    },
+    serviceIcon: {
+      fontSize: '2rem'
+    },
+    serviceTitle: {
+      margin: 0,
+      fontSize: '1.3rem'
+    },
+    servicePreview: {
+      padding: '25px',
+      background: currentTheme.cardBackground
+    },
+    learnMoreLink: {
+      color: currentTheme.buttonColor,
+      fontWeight: '600',
+      marginTop: '15px',
+      display: 'inline-block',
+      transition: 'all 0.3s ease',
+      ':hover': {
+        transform: 'translateX(5px)'
+      }
+    },
+    productsGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+      gap: '30px',
+      maxWidth: '1200px',
+      margin: '0 auto'
+    },
+    productCard: {
+      background: currentTheme.cardBackground,
+      borderRadius: '8px',
+      overflow: 'hidden',
+      boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
+      transition: 'all 0.3s ease',
+      cursor: 'pointer',
+      ':hover': {
+        transform: 'translateY(-10px)',
+        boxShadow: '0 15px 30px rgba(0,0,0,0.15)'
+      }
+    },
+    productImageContainer: {
+      height: '200px',
+      overflow: 'hidden',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: darkMode ? '#3a3a3a' : '#f5f5f5'
+    },
+    productImage: {
+      maxWidth: '100%',
+      maxHeight: '100%',
+      objectFit: 'contain',
+      padding: '20px'
+    },
+    productInfo: {
+      padding: '25px'
+    },
+    productTitle: {
+      color: currentTheme.buttonColor,
+      margin: '0 0 10px 0'
+    },
+    productDescription: {
+      margin: '0 0 15px 0',
+      color: currentTheme.textColor
+    },
+    viewDetails: {
+      color: '#0288d1',
+      fontWeight: '600',
+      transition: 'all 0.3s ease',
+      ':hover': {
+        transform: 'translateX(5px)'
+      }
+    },
+    industriesGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+      gap: '25px',
+      maxWidth: '1000px',
+      margin: '0 auto'
+    },
+    industryCard: {
+      padding: '30px 20px',
+      borderRadius: '8px',
+      color: 'white',
+      textAlign: 'center',
+      transition: 'all 0.3s ease',
+      boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
+      ':hover': {
+        transform: 'translateY(-10px)',
+        boxShadow: '0 15px 30px rgba(0,0,0,0.2)'
+      }
+    },
+    industryIcon: {
+      fontSize: '2.5rem',
+      marginBottom: '15px'
+    },
+    clientCarousel: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+      gap: '30px',
+      maxWidth: '1000px',
+      margin: '0 auto'
+    },
+    clientCard: {
+      background: currentTheme.cardBackground,
+      padding: '30px',
+      borderRadius: '8px',
+      boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
+      transition: 'all 0.3s ease',
+      cursor: 'pointer',
+      ':hover': {
+        transform: 'translateY(-10px)',
+        boxShadow: '0 15px 30px rgba(0,0,0,0.15)'
+      }
+    },
+    readTestimonial: {
+      color: '#0288d1',
+      fontWeight: '600',
+      marginTop: '15px',
+      display: 'inline-block',
+      transition: 'all 0.3s ease',
+      ':hover': {
+        transform: 'translateX(5px)'
+      }
+    },
+    contactContainer: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '40px',
+      maxWidth: '1200px',
+      margin: '0 auto'
+    },
+    mapContainer: {
+      flex: 1,
+      minWidth: '300px',
+      height: '450px',
+      borderRadius: '8px',
+      overflow: 'hidden',
+      boxShadow: '0 5px 15px rgba(0,0,0,0.1)'
+    },
+    formContainer: {
+      flex: 1,
+      minWidth: '300px'
+    },
+    formInput: {
+      width: '100%',
+      padding: '15px',
+      marginBottom: '20px',
+      border: '1px solid #ddd',
+      borderRadius: '4px',
+      fontSize: '1rem',
+      transition: 'all 0.3s ease',
+      ':focus': {
+        outline: 'none',
+        borderColor: '#0288d1',
+        boxShadow: '0 0 0 3px rgba(2,136,209,0.2)'
+      }
+    },
+    formTextarea: {
+      width: '100%',
+      padding: '15px',
+      marginBottom: '20px',
+      border: '1px solid #ddd',
+      borderRadius: '4px',
+      fontSize: '1rem',
+      minHeight: '150px',
+      transition: 'all 0.3s ease',
+      ':focus': {
+        outline: 'none',
+        borderColor: '#0288d1',
+        boxShadow: '0 0 0 3px rgba(2,136,209,0.2)'
+      }
+    },
+    submitButton: {
+      background: currentTheme.buttonColor,
+      color: 'white',
+      border: 'none',
+      padding: '15px 30px',
+      fontSize: '1.1rem',
+      borderRadius: '4px',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      transition: 'all 0.3s ease',
+      width: '100%',
+      ':hover': {
+        background: darkMode ? '#ff6e6e' : '#b71c1c',
+        transform: 'translateY(-2px)',
+        boxShadow: '0 5px 15px rgba(211,47,47,0.3)'
+      }
+    },
+    contactInfo: {
+      marginTop: '30px',
+      lineHeight: '1.8',
+      color: currentTheme.textColor
+    },
+    modalOverlay: {
       position: 'fixed',
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0,0,0,0.7)',
+      background: 'rgba(0,0,0,0.8)',
+      zIndex: 2000,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      zIndex: 1000
+      padding: '20px',
+      animation: 'fadeIn 0.3s ease'
     },
-    popupContent: {
-      background: 'white',
-      padding: '30px',
+    modalContent: {
+      background: currentTheme.cardBackground,
       borderRadius: '8px',
-      maxWidth: '600px',
+      maxWidth: '800px',
       width: '90%',
-      position: 'relative'
-    },
-    contactInfo: {
-      marginTop: '20px',
-      lineHeight: '2'
-    },
-    imageContainer: {
+      maxHeight: '90vh',
+      overflowY: 'auto',
+      padding: '40px',
       position: 'relative',
-      height: '200px',
-      overflow: 'hidden',
-      backgroundColor: '#f5f5f5',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center'
+      boxShadow: '0 5px 30px rgba(0,0,0,0.3)',
+      animation: 'slideUp 0.4s ease',
+      color: currentTheme.textColor
     },
-    productImage: {
-      maxWidth: '100%',
-      maxHeight: '100%',
-      objectFit: 'contain'
-    },
-    navButton: {
+    closeButton: {
       position: 'absolute',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      background: 'rgba(0,0,0,0.5)',
-      color: 'white',
+      top: '15px',
+      right: '15px',
+      background: 'none',
       border: 'none',
-      borderRadius: '50%',
-      width: '30px',
-      height: '30px',
+      fontSize: '1.8rem',
       cursor: 'pointer',
+      color: currentTheme.textColor,
+      transition: 'all 0.3s ease',
+      ':hover': {
+        color: currentTheme.buttonColor,
+        transform: 'scale(1.1)'
+      }
+    },
+    modalTitle: {
+      color: currentTheme.buttonColor,
+      marginBottom: '25px',
+      paddingRight: '30px'
+    },
+    modalBody: {
+      lineHeight: '1.8'
+    },
+    productImageGallery: {
       display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 2
+      gap: '20px',
+      overflowX: 'auto',
+      paddingBottom: '20px',
+      marginBottom: '25px',
+      scrollbarWidth: 'thin',
+      scrollbarColor: '#d32f2f #f5f5f5',
+      '::-webkit-scrollbar': {
+        height: '8px'
+      },
+      '::-webkit-scrollbar-track': {
+        background: '#f5f5f5'
+      },
+      '::-webkit-scrollbar-thumb': {
+        background: '#d32f2f',
+        borderRadius: '4px'
+      }
+    },
+    modalProductImage: {
+      maxHeight: '300px',
+      maxWidth: '100%',
+      objectFit: 'contain',
+      borderRadius: '4px',
+      boxShadow: '0 3px 10px rgba(0,0,0,0.1)'
+    },
+    featureList: {
+      paddingLeft: '20px',
+      margin: '20px 0',
+      color: currentTheme.textColor
+    },
+    '@media (max-width: 1024px)': {
+      section: {
+        padding: '80px 20px'
+      },
+      mainHeading: {
+        fontSize: '2.5rem'
+      },
+      subHeading: {
+        fontSize: '2rem'
+      },
+      sectionTitle: {
+        fontSize: '2.2rem'
+      }
+    },
+    '@media (max-width: 768px)': {
+      mainHeading: {
+        fontSize: '2.2rem'
+      },
+      subHeading: {
+        fontSize: '1.8rem'
+      },
+      sectionTitle: {
+        fontSize: '2rem'
+      },
+      aboutContainer: {
+        flexDirection: 'column-reverse'
+      },
+      aboutContent: {
+        minWidth: '100%'
+      },
+      servicesGrid: {
+        gridTemplateColumns: '1fr'
+      },
+      productsGrid: {
+        gridTemplateColumns: '1fr'
+      },
+      industriesGrid: {
+        gridTemplateColumns: 'repeat(2, 1fr)'
+      },
+      contactContainer: {
+        flexDirection: 'column'
+      },
+      mapContainer: {
+        height: '350px'
+      }
+    },
+    '@media (max-width: 480px)': {
+      mainHeading: {
+        fontSize: '1.8rem'
+      },
+      subHeading: {
+        fontSize: '1.5rem'
+      },
+      sectionTitle: {
+        fontSize: '1.8rem'
+      },
+      industriesGrid: {
+        gridTemplateColumns: '1fr'
+      },
+      modalContent: {
+        padding: '30px 20px'
+      }
+    },
+    '@keyframes fadeIn': {
+      from: { opacity: 0 },
+      to: { opacity: 1 }
+    },
+    '@keyframes slideUp': {
+      from: { 
+        opacity: 0,
+        transform: 'translateY(20px)'
+      },
+      to: { 
+        opacity: 1,
+        transform: 'translateY(0)'
+      }
     }
   };
 
   return (
     <div style={styles.container}>
-      {/* Hero Section */}
-      <section style={styles.hero}>
-        <h1 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>Welcome to Shakti Electrotech</h1>
-        <p style={{ fontSize: '1.2rem', maxWidth: '800px', margin: '0 auto 30px' }}>
-          Pioneering Industrial Automation & Control Solutions
-        </p>
-        <button 
-          style={styles.ctaButton}
-          onClick={() => setActiveTab('services')}
-        >
-          Explore Our Services
-        </button>
+      {/* Dark/Light Mode Toggle */}
+      <button 
+        style={styles.themeToggleButton}
+        onClick={toggleDarkMode}
+      >
+        {darkMode ? <FiSun /> : <FiMoon />}
+      </button>
+
+      {/* Welcome Section with Slideshow */}
+      <section id="welcome" style={{ ...styles.section, ...styles.welcomeSection }}>
+        <div style={styles.slideshowContainer}>
+          {backgroundImages.map((img, index) => (
+            <div 
+              key={index}
+              style={{
+                ...styles.slideshowImage,
+                backgroundImage: `url(${img})`,
+                opacity: index === currentBgIndex ? 1 : 0,
+                zIndex: 1
+              }}
+            />
+          ))}
+          <div style={styles.slideshowOverlay}></div>
+        </div>
+        <div style={styles.welcomeContent}>
+          <img 
+            src={shaktiLogo} 
+            alt="Shakti Electrotech Logo" 
+            style={styles.logoImage} 
+          />
+          <h1 style={styles.mainHeading}>YOU JUST THINK</h1>
+          <h2 style={styles.subHeading}>WE WILL DO IT</h2>
+          <Link
+            to="about"
+            spy={true}
+            smooth={true}
+            duration={500}
+            style={styles.learnMoreButton}
+          >
+            More about us
+          </Link>
+        </div>
       </section>
 
       {/* About Section */}
-      <section style={styles.section}>
+      <section id="about" style={{ ...styles.section, backgroundColor: currentTheme.sectionBackground }}>
         <h2 style={styles.sectionTitle}>Who We Are</h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '40px', alignItems: 'center' }}>
-          <div style={{ flex: 1, minWidth: '300px' }}>
+        <div style={styles.aboutContainer}>
+          <div style={styles.aboutContent}>
             <p>
-              Shakti Electrotech is a leading electronics and automation technology company with 18 years of experience.
+              Shakti Electrotech is a leading electronics and automation technology company with over 18 years of experience in delivering state-of-the-art solutions for industrial automation, control systems, and electronic testing equipment.
             </p>
-            <div style={{ 
-              backgroundColor: '#e3f2fd', 
-              padding: '20px', 
-              borderRadius: '8px', 
-              marginTop: '20px',
-              borderLeft: '5px solid #0288d1'
-            }}>
+            <p>
+              We have successfully partnered with industries including manufacturing, automotive, pharmaceuticals, food processing, and power generation, providing tailored automation solutions that improve efficiency, reliability, and operational safety.
+            </p>
+            <div style={styles.missionBox}>
               <h3>Our Mission</h3>
-              <p>To provide innovative, high-quality automation solutions that enhance productivity and safety.</p>
+              <p>To provide innovative, high-quality, and cost-effective automation solutions that enhance industrial productivity while maintaining the highest standards of operational safety.</p>
+              <p>We are committed to delivering customized solutions that precisely meet our clients' requirements, using only the best-in-class components and technologies.</p>
             </div>
           </div>
           <div style={{ flex: 1, minWidth: '300px', textAlign: 'center' }}>
             <img 
               src={shaktiLogo} 
               alt="Shakti Electrotech Logo" 
-              style={{ 
-                width: '100%',
-                height: 'auto',
-                maxHeight: '300px',
-                objectFit: 'contain'
-              }} 
+              style={styles.aboutLogo} 
             />
           </div>
         </div>
       </section>
 
-      {/* Services/Products Section */}
-      <section style={{ ...styles.section, backgroundColor: '#f9f9f9' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '30px' }}>
-          <button 
-            style={{ 
-              padding: '10px 20px',
-              background: activeTab === 'services' ? '#d32f2f' : 'transparent',
-              color: activeTab === 'services' ? 'white' : '#333',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: '600'
-            }}
-            onClick={() => setActiveTab('services')}
-          >
-            Services
-          </button>
-          <button 
-            style={{ 
-              padding: '10px 20px',
-              background: activeTab === 'products' ? '#d32f2f' : 'transparent',
-              color: activeTab === 'products' ? 'white' : '#333',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: '600'
-            }}
-            onClick={() => setActiveTab('products')}
-          >
-            Products
-          </button>
-        </div>
-
-        {activeTab === 'services' ? (
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-            gap: '20px' 
-          }}>
-            {services.map((service, index) => (
-              <div 
-                key={index}
-                style={{ 
-                  background: 'white',
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                  transition: 'all 0.3s ease',
-                  cursor: 'pointer'
-                }}
-                onClick={() => toggleService(index)}
-              >
-                <div style={{ 
-                  padding: '20px',
-                  background: '#0288d1',
-                  color: 'white',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
-                  <h3 style={{ margin: 0 }}>{service.title}</h3>
-                  <span style={{ fontSize: '1.5rem' }}>
-                    {expandedService === index ? '-' : '+'}
-                  </span>
-                </div>
-                {expandedService === index && (
-                  <div style={{ padding: '20px' }}>
+      {/* Services Section */}
+      <section id="services" style={{ ...styles.section, backgroundColor: currentTheme.backgroundColor }}>
+        <h2 style={styles.sectionTitle}>Our Services</h2>
+        <div style={styles.servicesGrid}>
+          {services.map((service, index) => (
+            <div 
+              key={index}
+              style={styles.serviceCard}
+              onClick={() => openModal({
+                type: 'service',
+                title: service.title,
+                content: (
+                  <>
                     <p>{service.description}</p>
-                    <ul style={{ paddingLeft: '20px', marginTop: '15px' }}>
+                    <ul style={styles.featureList}>
                       {service.features.map((feature, i) => (
-                        <li key={i} style={{ marginBottom: '8px' }}>{feature}</li>
+                        <li key={i}>{feature}</li>
                       ))}
                     </ul>
-                  </div>
-                )}
+                  </>
+                )
+              })}
+            >
+              <div style={styles.serviceHeader}>
+                <div style={styles.serviceIcon}>{service.icon}</div>
+                <h3 style={styles.serviceTitle}>{service.title}</h3>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-            gap: '20px' 
-          }}>
-            {products.map((product, index) => (
-              <div 
-                key={index}
-                style={{ 
-                  background: 'white',
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                  transition: 'all 0.3s ease',
-                  cursor: 'pointer'
-                }}
-                onClick={() => toggleService(index)}
-              >
-                <div style={{ 
-                  padding: '20px',
-                  background: '#d32f2f',
-                  color: 'white',
-                  textAlign: 'center'
-                }}>
-                  <h3 style={{ margin: 0 }}>{product.title}</h3>
-                </div>
-                
-                {/* Product Image Display */}
-                {product.images.length > 0 && (
-                  <div style={styles.imageContainer}>
-                    <img 
-                      src={product.images[currentImageIndices[index] || 0]} 
-                      alt={product.title}
-                      style={styles.productImage}
-                    />
-                    {product.images.length > 1 && (
-                      <>
-                        <button 
-                          style={{ ...styles.navButton, left: '10px' }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            showPrevImage(index);
-                          }}
-                        >
-                          &lt;
-                        </button>
-                        <button 
-                          style={{ ...styles.navButton, right: '10px' }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            showNextImage(index);
-                          }}
-                        >
-                          &gt;
-                        </button>
-                      </>
-                    )}
-                  </div>
-                )}
+              <div style={styles.servicePreview}>
+                <p>{service.description.substring(0, 100)}...</p>
+                <div style={styles.learnMoreLink}>Click to learn more →</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
-                {expandedService === index && (
-                  <div style={{ padding: '20px' }}>
+      {/* Products Section */}
+      <section id="products" style={{ ...styles.section, backgroundColor: currentTheme.sectionBackground }}>
+        <h2 style={styles.sectionTitle}>Our Products</h2>
+        <div style={styles.productsGrid}>
+          {products.map((product, index) => (
+            <div 
+              key={index}
+              style={styles.productCard}
+              onClick={() => openModal({
+                type: 'product',
+                title: product.title,
+                content: (
+                  <>
+                    <div style={styles.productImageGallery}>
+                      {product.images.map((img, imgIndex) => (
+                        <img 
+                          key={imgIndex}
+                          src={img} 
+                          alt={`${product.title} ${imgIndex + 1}`}
+                          style={styles.modalProductImage}
+                        />
+                      ))}
+                    </div>
+
                     <p>{product.description}</p>
-                    <ul style={{ paddingLeft: '20px', marginTop: '15px' }}>
+                    <ul style={styles.featureList}>
                       {product.features.map((feature, i) => (
-                        <li key={i} style={{ marginBottom: '8px' }}>{feature}</li>
+                        <li key={i}>{feature}</li>
                       ))}
                     </ul>
-                  </div>
-                )}
+                  </>
+                )
+              })}
+            >
+              <div style={styles.productImageContainer}>
+                <img 
+                  src={product.images[0]} 
+                  alt={product.title}
+                  style={styles.productImage}
+                />
               </div>
-            ))}
-          </div>
-        )}
+              <div style={styles.productInfo}>
+                <h3 style={styles.productTitle}>{product.title}</h3>
+                <p style={styles.productDescription}>{product.description.substring(0, 80)}...</p>
+                <div style={styles.viewDetails}>View Details →</div>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* Industries Section */}
-      <section style={styles.section}>
+      <section id="industries" style={{ ...styles.section, backgroundColor: currentTheme.backgroundColor }}>
         <h2 style={styles.sectionTitle}>Industries We Serve</h2>
-        <div style={{ 
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-          gap: '20px'
-        }}>
+        <div style={styles.industriesGrid}>
           {industries.map((industry, index) => (
             <div 
               key={index}
               style={{
-                padding: '20px',
-                borderRadius: '8px',
-                background: `hsl(${index * 60}, 70%, 45%)`,
-                color: 'white',
-                textAlign: 'center',
-                transition: 'all 0.3s ease'
+                ...styles.industryCard,
+                background: `hsl(${index * 60}, 70%, 45%)`
               }}
             >
-              <div style={{ fontSize: '2rem', marginBottom: '10px' }}>{industry.icon}</div>
-              <h3 style={{ margin: 0 }}>{industry.name}</h3>
+              <div style={styles.industryIcon}>{industry.icon}</div>
+              <h3 style={{ margin: '0 0 10px 0', fontSize: '1.3rem' }}>{industry.name}</h3>
+              <p style={{ margin: 0, fontSize: '0.9rem' }}>{industry.description}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Clients Section */}
-      <section style={{ ...styles.section, backgroundColor: '#f9f9f9' }}>
+      <section id="clients" style={{ ...styles.section, backgroundColor: currentTheme.sectionBackground }}>
         <h2 style={styles.sectionTitle}>Our Clients</h2>
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          maxWidth: '800px',
-          margin: '0 auto'
-        }}>
-          <button 
-            style={{ 
-              background: '#d32f2f',
-              color: 'white',
-              border: 'none',
-              padding: '10px 15px',
-              fontSize: '1.2rem',
-              cursor: 'pointer',
-              borderRadius: '50%'
-            }}
-            onClick={showPrevClient}
-          >
-            &lt;
-          </button>
-          <div 
-            style={{ 
-              flex: 1,
-              background: 'white',
-              padding: '30px',
-              borderRadius: '8px',
-              margin: '0 20px',
-              cursor: 'pointer',
-              textAlign: 'center'
-            }}
-            onClick={openTestimonialPopup}
-          >
-            <h3>{clients[currentClientIndex].name}</h3>
-            <p>{clients[currentClientIndex].location}</p>
-          </div>
-          <button 
-            style={{ 
-              background: '#d32f2f',
-              color: 'white',
-              border: 'none',
-              padding: '10px 15px',
-              fontSize: '1.2rem',
-              cursor: 'pointer',
-              borderRadius: '50%'
-            }}
-            onClick={showNextClient}
-          >
-            &gt;
-          </button>
+        <div style={styles.clientCarousel}>
+          {clients.map((client, index) => (
+            <div 
+              key={index}
+              style={styles.clientCard}
+              onClick={() => openModal({
+                type: 'client',
+                title: client.name,
+                content: (
+                  <>
+                    <h3 style={{ color: currentTheme.buttonColor, marginBottom: '10px' }}>{client.location}</h3>
+                    <p style={{ fontStyle: 'italic', fontSize: '1.1rem' }}>
+                      "{client.testimonial}"
+                    </p>
+                  </>
+                )
+              })}
+            >
+              <h3 style={{ color: currentTheme.buttonColor }}>{client.name}</h3>
+              <p>{client.location}</p>
+              <div style={styles.readTestimonial}>Read Testimonial →</div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section style={{ 
-        padding: '80px 20px',
-        textAlign: 'center',
-        background: '#0288d1',
-        color: 'white'
-      }}>
-        <h2 style={{ ...styles.sectionTitle, color: 'white' }}>Ready to Automate Your Business?</h2>
-        <button 
-          style={{ 
-            ...styles.ctaButton,
-            background: '#d32f2f'
-          }}
-          onClick={openContactPopup}
-        >
-          Contact Us
-        </button>
-      </section>
-
-      {/* Testimonial Popup */}
-      {showTestimonialPopup && (
-        <div style={styles.popupOverlay}>
-          <div style={styles.popupContent}>
-            <button 
-              style={{ 
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                background: 'none',
-                border: 'none',
-                fontSize: '1.5rem',
-                cursor: 'pointer'
-              }}
-              onClick={() => setShowTestimonialPopup(false)}
-            >
-              ×
-            </button>
-            <h3 style={{ color: '#d32f2f' }}>{clients[currentClientIndex].name}</h3>
-            <p style={{ fontStyle: 'italic' }}>"{clients[currentClientIndex].testimonial}"</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+      {/* Contact Section */}
+      <section id="contact" style={{ ...styles.section, backgroundColor: currentTheme.backgroundColor }}>
+        <h2 style={styles.sectionTitle}>Contact Us</h2>
+        <div style={styles.contactContainer}>
+          <div style={styles.mapContainer}>
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3749.223651109616!2d75.3525344!3d19.9138281!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bdbbd004cf63d99%3A0x7a1e0f36898e91af!2sShakti%20Electrotech!5e0!3m2!1sen!2sin!4v1711800000000!5m2!1sen!2sin"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Google Maps Location"
+            ></iframe>
+          </div>
+          <div style={styles.formContainer}>
+            <form>
+              <input 
+                type="text" 
+                placeholder="Your Name" 
+                style={styles.formInput}
+                required
+              />
+              <input 
+                type="email" 
+                placeholder="Your Email" 
+                style={styles.formInput}
+                required
+              />
+              <input 
+                type="tel" 
+                placeholder="Your Phone" 
+                style={styles.formInput}
+              />
+              <textarea 
+                placeholder="Your Message" 
+                style={styles.formTextarea}
+                required
+              ></textarea>
               <button 
-                style={{ 
-                  padding: '8px 15px',
-                  background: '#d32f2f',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-                onClick={showPrevClient}
+                type="submit" 
+                style={styles.submitButton}
               >
-                Previous
+                Send Message
               </button>
-              <button 
-                style={{ 
-                  padding: '8px 15px',
-                  background: '#0288d1',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-                onClick={showNextClient}
-              >
-                Next
-              </button>
+            </form>
+            <div style={styles.contactInfo}>
+              <p><strong>Address:</strong> "Shakti" Plot No.73, Auditor Housing Society, Jalgaon Road, Chh. Sambhajinagar, 431003</p>
+              <p><strong>Phone:</strong> Shankar Kinge - 9822315028, Gajanan Narkhede - 9881391966, Kaushal Kinge - 8055560185</p>
+              <p><strong>Email:</strong> shaktietech@gmail.com</p>
+              <p><strong>Working Hours:</strong> Mon-Sat: 9:30 AM - 6:30 PM</p>
             </div>
           </div>
         </div>
-      )}
+      </section>
 
-      {/* Contact Popup */}
-      {showContactPopup && (
-        <div style={styles.popupOverlay}>
-          <div style={styles.popupContent}>
-            <button 
-              style={{ 
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                background: 'none',
-                border: 'none',
-                fontSize: '1.5rem',
-                cursor: 'pointer'
-              }}
-              onClick={() => setShowContactPopup(false)}
-            >
-              ×
-            </button>
-            <h3 style={{ color: '#d32f2f' }}>Contact Shakti Electrotech</h3>
-            <div style={styles.contactInfo}>
-              <p><strong>Address:</strong> "Shakti" Plot No.73, Auditor Housing Society, Jalgaon Road, Chh. Sambhajinagar, 431003</p>
-              <p><strong>Phone:</strong> Shankar Kinge - 9822315028<br />
-                 Gajanan Narkhede - 9881391966<br />
-                 Kaushal Kinge - 8055560185</p>
-              <p><strong>Email:</strong> shaktietech@gmail.com</p>
-              <p><strong>Website:</strong> www.shaktietech.com</p>
-              <p><strong>Working Hours:</strong> Mon-Sat: 9:30 AM - 6:30 PM</p>
+      {/* Modal Component */}
+      {isModalOpen && (
+        <div style={styles.modalOverlay} onClick={closeModal}>
+          <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <button style={styles.closeButton} onClick={closeModal}>×</button>
+            <h2 style={styles.modalTitle}>{modalContent.title}</h2>
+            <div style={styles.modalBody}>
+              {modalContent.content}
             </div>
           </div>
         </div>

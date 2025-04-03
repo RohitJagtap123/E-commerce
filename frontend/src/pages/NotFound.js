@@ -7,8 +7,6 @@ const NotFound = () => {
       <h1>404 - Page Not Found</h1>
       <p>Sorry, the page you are looking for does not exist.</p>
       <Link to="/login">Go to Login</Link>
-      <br />
-      <Link to="/signup">Go to Signup</Link>
     </div>
   );
 };
