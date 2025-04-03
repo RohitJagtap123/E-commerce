@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-scroll';
 import { FiSun, FiMoon } from 'react-icons/fi';
+import axios from 'axios';
 
 // Import all product images
 import andonControl1 from '../assets/andon control 1.jpg';
@@ -22,7 +23,7 @@ import hmiTouchScreen from '../assets/hmi touch screen 1.png';
 import solarEnergyMeter from '../assets/solar energy meter 1.png';
 import fuelGaugeUnit from '../assets/fuel gaege testing unit big .png';
 
-// Background images for slideshow (selected cool ones)
+// Background images for slideshow
 import bg1 from '../assets/hmi touch screen 1.png';
 import bg2 from '../assets/mhms 5.png';
 import bg3 from '../assets/solar energy meter 1.png';
@@ -35,6 +36,14 @@ function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
   const backgroundImages = [bg1, bg2, bg3, bg4, bg5];
 
@@ -56,51 +65,51 @@ function Home() {
     {
       title: "PLC Panels & Automation",
       icon: "⚙",
-      description: "We specialize in designing and developing high-performance Programmable Logic Controller (PLC) panels for industrial automation. With 18 years of experience, we've delivered solutions to manufacturing, automotive, pharmaceutical and other industries.",
+      description: "We specialize in designing and developing high-performance Programmable Logic Controller (PLC) panels for industrial automation.",
       features: [
         "Custom-built PLC panels for specific industry needs",
         "Seamless integration with existing systems",
-        "Brands we work with: Siemens, Allen-Bradley, Schneider, Mitsubishi, Delta",
+        "Brands we work with: Siemens, Allen-Bradley, Schneider",
         "Reliable after-sales support and maintenance"
       ],
       images: [hmiTouchScreen]
     },
     {
-      title: "Touch Screen Panels (HMI)",
-      icon: "👆",
-      description: "Our Human-Machine Interface (HMI) panels are designed for intuitive operation in industrial environments with real-time data visualization capabilities.",
-      features: [
-        "Custom GUI design tailored to your workflow",
-        "Integration with PLC & SCADA systems",
-        "Rugged, industrial-grade touch screens",
-        "User-friendly interfaces for easy monitoring"
-      ],
-      images: [hmiTouchScreen]
-    },
-    {
-      title: "Control Panels",
-      icon: "🎛",
-      description: "From motor control centers to specialized testing panels, we provide complete control solutions for industrial automation.",
-      features: [
-        "Testing control & motor control solutions",
-        "Safety-compliant designs meeting industry standards",
-        "Tailored solutions for unique applications",
-        "High-quality components for reliability"
-      ],
-      images: [continuityPanel]
-    },
-    {
-      title: "Testing Equipment",
-      icon: "🔍",
-      description: "We develop precision testing equipment for quality control in electrical and electronic industries.",
-      features: [
-        "Automated testing rigs for electronics",
-        "Customized solutions for R&D labs",
-        "Calibration & reliability testing systems",
-        "Data logging and analysis capabilities"
-      ],
-      images: [fuelGaugeUnit]
-    }
+        title: "Touch Screen Panels (HMI)",
+        icon: "👆",
+        description: "Our Human-Machine Interface (HMI) panels are designed for intuitive operation in industrial environments with real-time data visualization capabilities.",
+        features: [
+          "Custom GUI design tailored to your workflow",
+          "Integration with PLC & SCADA systems",
+          "Rugged, industrial-grade touch screens",
+          "User-friendly interfaces for easy monitoring"
+        ],
+        images: [hmiTouchScreen]
+      },
+      {
+        title: "Control Panels",
+        icon: "🎛",
+        description: "From motor control centers to specialized testing panels, we provide complete control solutions for industrial automation.",
+        features: [
+          "Testing control & motor control solutions",
+          "Safety-compliant designs meeting industry standards",
+          "Tailored solutions for unique applications",
+          "High-quality components for reliability"
+        ],
+        images: [continuityPanel]
+      },
+      {
+        title: "Testing Equipment",
+        icon: "🔍",
+        description: "We develop precision testing equipment for quality control in electrical and electronic industries.",
+        features: [
+          "Automated testing rigs for electronics",
+          "Customized solutions for R&D labs",
+          "Calibration & reliability testing systems",
+          "Data logging and analysis capabilities"
+        ],
+        images: [fuelGaugeUnit]
+      }
   ];
 
   const products = [
@@ -110,88 +119,65 @@ function Home() {
       features: [
         "Real-time Monitoring of conveyor status",
         "Stoppage Logging with duration tracking",
-        "Accountability Tracking for operators",
-        "Historical Data Analysis for process improvement"
+        "Accountability Tracking for operators"
       ],
       images: [andonControl1]
     },
     {
-      title: "Continuity Testing Unit",
-      description: "Advanced testing solution for electrical circuits with multiple configurations.",
-      features: [
-        "Multiple testing modes (9X9, 4X4, 2X2)",
-        "Precision measurement capabilities",
-        "Robust industrial design",
-        "Easy-to-use interface"
-      ],
-      images: [continuityUnit1, continuityUnit2]
-    },
-    {
-      title: "Data Loggers System",
-      description: "Advanced data acquisition for industrial monitoring.",
-      features: [
-        "Multi-sensor support (temp, pressure, etc.)",
-        "High-capacity data storage",
-        "Trend analysis capabilities",
-        "Industrial-grade reliability"
-      ],
-      images: [dataLogger16Ch, dataLogger]
-    },
-    {
-      title: "Machine Health Monitoring",
-      description: "Predictive maintenance system for industrial equipment.",
-      features: [
-        "Real-time parameter monitoring",
-        "Early fault detection",
-        "Maintenance alerts",
-        "Performance analytics"
-      ],
-      images: [mhmsDashboard, mhmsSystem]
-    },
-    {
-      title: "Medical Emergency System",
-      description: "Code Blue emergency response system for healthcare facilities.",
-      features: [
-        "Rapid activation with call points",
-        "Real-time alerting system",
-        "Response time tracking",
-        "Hospital-wide integration"
-      ],
-      images: [medicalCallPoint, medicalEmergencyPoint]
-    },
-    {
-      title: "VLT & IR Rejection Meter",
-      description: "Precision measurement device for optical properties.",
-      features: [
-        "Accurate visible light transmission measurement",
-        "Infrared rejection testing",
-        "Easy operation with hold function",
-        "Industrial-grade construction"
-      ],
-      images: [vltMeter]
-    },
-    {
-      title: "Solar Energy Meter",
-      description: "Advanced monitoring system for solar power installations.",
-      features: [
-        "Real-time energy production tracking",
-        "Efficiency analysis",
-        "Remote monitoring capabilities",
-        "Weather-resistant design"
-      ],
-      images: [solarEnergyMeter]
-    },
-    {
-      title: "Fuel Gauge Testing Unit",
-      description: "Precision testing equipment for fuel level indicators.",
-      features: [
-        "Multiple calibration modes",
-        "High accuracy measurement",
-        "Automated testing sequences",
-        "Durable industrial construction"
-      ],
-      images: [fuelGaugeUnit]
-    }
+        title: "Continuity Testing Unit",
+        description: "Advanced testing solution for electrical circuits with multiple configurations.",
+        features: [
+          "Multiple testing modes (9X9, 4X4, 2X2)",
+          "Precision measurement capabilities",
+          "Robust industrial design",
+          "Easy-to-use interface"
+        ],
+        images: [continuityUnit1, continuityUnit2]
+      },
+      {
+        title: "Data Loggers System",
+        description: "Advanced data acquisition for industrial monitoring.",
+        features: [
+          "Multi-sensor support (temp, pressure, etc.)",
+          "High-capacity data storage",
+          "Trend analysis capabilities",
+          "Industrial-grade reliability"
+        ],
+        images: [dataLogger16Ch, dataLogger]
+      },
+      {
+        title: "Machine Health Monitoring",
+        description: "Predictive maintenance system for industrial equipment.",
+        features: [
+          "Real-time parameter monitoring",
+          "Early fault detection",
+          "Maintenance alerts",
+          "Performance analytics"
+        ],
+        images: [mhmsDashboard, mhmsSystem]
+      },
+      {
+        title: "Medical Emergency System",
+        description: "Code Blue emergency response system for healthcare facilities.",
+        features: [
+          "Rapid activation with call points",
+          "Real-time alerting system",
+          "Response time tracking",
+          "Hospital-wide integration"
+        ],
+        images: [medicalCallPoint, medicalEmergencyPoint]
+      },
+      {
+        title: "VLT & IR Rejection Meter",
+        description: "Precision measurement device for optical properties.",
+        features: [
+          "Accurate visible light transmission measurement",
+          "Infrared rejection testing",
+          "Easy operation with hold function",
+          "Industrial-grade construction"
+        ],
+        images: [vltMeter]
+      }
   ];
 
   const clients = [
@@ -201,15 +187,15 @@ function Home() {
       testimonial: "Shakti's automation solutions increased our production efficiency by 30% while reducing downtime by 45%."
     },
     {
-      name: "Garware Polyester Limited",
-      location: "Chikalthana, Chh. Sambhajinagar",
-      testimonial: "Their control panels have been running flawlessly for 5+ years with minimal maintenance requirements."
-    },
-    {
-      name: "Siemens Ltd.",
-      location: "Waluj, Chh. Sambhajinagar",
-      testimonial: "Excellent technical support and reliable products that integrate seamlessly with our existing systems."
-    }
+        name: "Garware Polyester Limited",
+        location: "Chikalthana, Chh. Sambhajinagar",
+        testimonial: "Their control panels have been running flawlessly for 5+ years with minimal maintenance requirements."
+      },
+      {
+        name: "Siemens Ltd.",
+        location: "Waluj, Chh. Sambhajinagar",
+        testimonial: "Excellent technical support and reliable products that integrate seamlessly with our existing systems."
+      }
   ];
 
   const industries = [
@@ -223,7 +209,6 @@ function Home() {
     { name: "R&D Labs", icon: "🔬", description: "Specialized testing equipment" }
   ];
 
-  // Auto-rotate background images
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentBgIndex((prev) => (prev + 1) % backgroundImages.length);
@@ -240,6 +225,32 @@ function Home() {
   const closeModal = () => {
     setIsModalOpen(false);
     document.body.style.overflow = 'auto';
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('/api/submissions', formData);
+      setSubmitted(true);
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        message: ''
+      });
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (err) {
+      setError('Failed to submit form. Please try again.');
+      console.error(err);
+    }
   };
 
   const themeStyles = {
@@ -271,326 +282,326 @@ function Home() {
       transition: 'all 0.3s ease'
     },
     themeToggleButton: {
-      position: 'fixed',
-      bottom: '20px',
-      right: '20px',
-      background: currentTheme.buttonColor,
-      color: 'white',
-      border: 'none',
-      borderRadius: '50%',
-      width: '50px',
-      height: '50px',
-      fontSize: '20px',
-      cursor: 'pointer',
-      boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 1000,
-      transition: 'all 0.3s ease',
-      ':hover': {
-        transform: 'scale(1.1)'
-      }
-    },
-    section: {
-      minHeight: '100vh',
-      padding: '80px 20px',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      position: 'relative',
-      scrollSnapAlign: 'start'
-    },
-    welcomeSection: {
-      color: 'white',
-      textAlign: 'center',
-      overflow: 'hidden'
-    },
-    slideshowContainer: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      zIndex: 0
-    },
-    slideshowImage: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      filter: 'blur(4px) brightness(0.6)',
-      transition: 'opacity 1s ease-in-out'
-    },
-    slideshowOverlay: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(0,0,0,0.3)',
-      zIndex: 1
-    },
-    welcomeContent: {
-      maxWidth: '800px',
-      margin: '0 auto',
-      position: 'relative',
-      zIndex: 2,
-      padding: '0 20px'
-    },
-    logoImage: {
-      maxWidth: '200px',
-      marginBottom: '30px',
-      filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'
-    },
-    mainHeading: {
-      fontSize: '3rem',
-      fontWeight: 'bold',
-      margin: '10px 0',
-      textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-      lineHeight: '1.2'
-    },
-    subHeading: {
-      fontSize: '2.2rem',
-      fontWeight: 'bold',
-      margin: '10px 0 30px',
-      textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
-    },
-    learnMoreButton: {
-      background: 'white',
-      color: '#d32f2f',
-      border: 'none',
-      padding: '15px 40px',
-      fontSize: '1.1rem',
-      borderRadius: '30px',
-      cursor: 'pointer',
-      fontWeight: 'bold',
-      marginTop: '30px',
-      boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
-      transition: 'all 0.3s ease',
-      ':hover': {
-        transform: 'translateY(-3px)',
-        boxShadow: '0 6px 20px rgba(0,0,0,0.3)'
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        background: currentTheme.buttonColor,
+        color: 'white',
+        border: 'none',
+        borderRadius: '50%',
+        width: '50px',
+        height: '50px',
+        fontSize: '20px',
+        cursor: 'pointer',
+        boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+        transition: 'all 0.3s ease',
+        ':hover': {
+          transform: 'scale(1.1)'
+        }
       },
-      textDecoration: 'none',
-      display: 'inline-block'
-    },
-    sectionTitle: {
-      fontSize: '2.5rem',
-      marginBottom: '50px',
-      color: currentTheme.buttonColor,
-      textAlign: 'center',
-      position: 'relative',
-      ':after': {
-        content: '""',
-        display: 'block',
-        width: '80px',
-        height: '4px',
+      section: {
+        minHeight: '100vh',
+        padding: '80px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
+        scrollSnapAlign: 'start'
+      },
+      welcomeSection: {
+        color: 'white',
+        textAlign: 'center',
+        overflow: 'hidden'
+      },
+      slideshowContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 0
+      },
+      slideshowImage: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        filter: 'blur(4px) brightness(0.6)',
+        transition: 'opacity 1s ease-in-out'
+      },
+      slideshowOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0,0,0,0.3)',
+        zIndex: 1
+      },
+      welcomeContent: {
+        maxWidth: '800px',
+        margin: '0 auto',
+        position: 'relative',
+        zIndex: 2,
+        padding: '0 20px'
+      },
+      logoImage: {
+        maxWidth: '200px',
+        marginBottom: '30px',
+        filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'
+      },
+      mainHeading: {
+        fontSize: '3rem',
+        fontWeight: 'bold',
+        margin: '10px 0',
+        textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+        lineHeight: '1.2'
+      },
+      subHeading: {
+        fontSize: '2.2rem',
+        fontWeight: 'bold',
+        margin: '10px 0 30px',
+        textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+      },
+      learnMoreButton: {
+        background: 'white',
+        color: '#d32f2f',
+        border: 'none',
+        padding: '15px 40px',
+        fontSize: '1.1rem',
+        borderRadius: '30px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+        marginTop: '30px',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+        transition: 'all 0.3s ease',
+        ':hover': {
+          transform: 'translateY(-3px)',
+          boxShadow: '0 6px 20px rgba(0,0,0,0.3)'
+        },
+        textDecoration: 'none',
+        display: 'inline-block'
+      },
+      sectionTitle: {
+        fontSize: '2.5rem',
+        marginBottom: '50px',
+        color: currentTheme.buttonColor,
+        textAlign: 'center',
+        position: 'relative',
+        ':after': {
+          content: '""',
+          display: 'block',
+          width: '80px',
+          height: '4px',
+          background: '#0288d1',
+          margin: '15px auto 0'
+        }
+      },
+      aboutContainer: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '40px',
+        alignItems: 'center',
+        maxWidth: '1200px',
+        margin: '0 auto'
+      },
+      aboutContent: {
+        flex: 1,
+        minWidth: '300px',
+        fontSize: '1.1rem',
+        lineHeight: '1.8'
+      },
+      aboutLogo: {
+        width: '100%',
+        maxWidth: '400px',
+        height: 'auto',
+        objectFit: 'contain',
+        borderRadius: '8px',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+      },
+      missionBox: {
+        backgroundColor: darkMode ? '#2d2d2d' : '#e3f2fd',
+        padding: '25px',
+        borderRadius: '8px',
+        marginTop: '30px',
+        borderLeft: '5px solid #0288d1',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
+      },
+      servicesGrid: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '25px',
+        maxWidth: '1200px',
+        margin: '0 auto'
+      },
+      serviceCard: {
+        background: currentTheme.cardBackground,
+        borderRadius: '8px',
+        overflow: 'hidden',
+        boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
+        transition: 'all 0.3s ease',
+        cursor: 'pointer',
+        ':hover': {
+          transform: 'translateY(-10px)',
+          boxShadow: '0 15px 30px rgba(0,0,0,0.15)'
+        }
+      },
+      serviceHeader: {
+        padding: '25px',
         background: '#0288d1',
-        margin: '15px auto 0'
-      }
-    },
-    aboutContainer: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: '40px',
-      alignItems: 'center',
-      maxWidth: '1200px',
-      margin: '0 auto'
-    },
-    aboutContent: {
-      flex: 1,
-      minWidth: '300px',
-      fontSize: '1.1rem',
-      lineHeight: '1.8'
-    },
-    aboutLogo: {
-      width: '100%',
-      maxWidth: '400px',
-      height: 'auto',
-      objectFit: 'contain',
-      borderRadius: '8px',
-      boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
-    },
-    missionBox: {
-      backgroundColor: darkMode ? '#2d2d2d' : '#e3f2fd',
-      padding: '25px',
-      borderRadius: '8px',
-      marginTop: '30px',
-      borderLeft: '5px solid #0288d1',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
-    },
-    servicesGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-      gap: '25px',
-      maxWidth: '1200px',
-      margin: '0 auto'
-    },
-    serviceCard: {
-      background: currentTheme.cardBackground,
-      borderRadius: '8px',
-      overflow: 'hidden',
-      boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
-      transition: 'all 0.3s ease',
-      cursor: 'pointer',
-      ':hover': {
-        transform: 'translateY(-10px)',
-        boxShadow: '0 15px 30px rgba(0,0,0,0.15)'
-      }
-    },
-    serviceHeader: {
-      padding: '25px',
-      background: '#0288d1',
-      color: 'white',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '15px'
-    },
-    serviceIcon: {
-      fontSize: '2rem'
-    },
-    serviceTitle: {
-      margin: 0,
-      fontSize: '1.3rem'
-    },
-    servicePreview: {
-      padding: '25px',
-      background: currentTheme.cardBackground
-    },
-    learnMoreLink: {
-      color: currentTheme.buttonColor,
-      fontWeight: '600',
-      marginTop: '15px',
-      display: 'inline-block',
-      transition: 'all 0.3s ease',
-      ':hover': {
-        transform: 'translateX(5px)'
-      }
-    },
-    productsGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-      gap: '30px',
-      maxWidth: '1200px',
-      margin: '0 auto'
-    },
-    productCard: {
-      background: currentTheme.cardBackground,
-      borderRadius: '8px',
-      overflow: 'hidden',
-      boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
-      transition: 'all 0.3s ease',
-      cursor: 'pointer',
-      ':hover': {
-        transform: 'translateY(-10px)',
-        boxShadow: '0 15px 30px rgba(0,0,0,0.15)'
-      }
-    },
-    productImageContainer: {
-      height: '200px',
-      overflow: 'hidden',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: darkMode ? '#3a3a3a' : '#f5f5f5'
-    },
-    productImage: {
-      maxWidth: '100%',
-      maxHeight: '100%',
-      objectFit: 'contain',
-      padding: '20px'
-    },
-    productInfo: {
-      padding: '25px'
-    },
-    productTitle: {
-      color: currentTheme.buttonColor,
-      margin: '0 0 10px 0'
-    },
-    productDescription: {
-      margin: '0 0 15px 0',
-      color: currentTheme.textColor
-    },
-    viewDetails: {
-      color: '#0288d1',
-      fontWeight: '600',
-      transition: 'all 0.3s ease',
-      ':hover': {
-        transform: 'translateX(5px)'
-      }
-    },
-    industriesGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-      gap: '25px',
-      maxWidth: '1000px',
-      margin: '0 auto'
-    },
-    industryCard: {
-      padding: '30px 20px',
-      borderRadius: '8px',
-      color: 'white',
-      textAlign: 'center',
-      transition: 'all 0.3s ease',
-      boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
-      ':hover': {
-        transform: 'translateY(-10px)',
-        boxShadow: '0 15px 30px rgba(0,0,0,0.2)'
-      }
-    },
-    industryIcon: {
-      fontSize: '2.5rem',
-      marginBottom: '15px'
-    },
-    clientCarousel: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-      gap: '30px',
-      maxWidth: '1000px',
-      margin: '0 auto'
-    },
-    clientCard: {
-      background: currentTheme.cardBackground,
-      padding: '30px',
-      borderRadius: '8px',
-      boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
-      transition: 'all 0.3s ease',
-      cursor: 'pointer',
-      ':hover': {
-        transform: 'translateY(-10px)',
-        boxShadow: '0 15px 30px rgba(0,0,0,0.15)'
-      }
-    },
-    readTestimonial: {
-      color: '#0288d1',
-      fontWeight: '600',
-      marginTop: '15px',
-      display: 'inline-block',
-      transition: 'all 0.3s ease',
-      ':hover': {
-        transform: 'translateX(5px)'
-      }
-    },
-    contactContainer: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: '40px',
-      maxWidth: '1200px',
-      margin: '0 auto'
-    },
-    mapContainer: {
-      flex: 1,
-      minWidth: '300px',
-      height: '450px',
-      borderRadius: '8px',
-      overflow: 'hidden',
-      boxShadow: '0 5px 15px rgba(0,0,0,0.1)'
-    },
+        color: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '15px'
+      },
+      serviceIcon: {
+        fontSize: '2rem'
+      },
+      serviceTitle: {
+        margin: 0,
+        fontSize: '1.3rem'
+      },
+      servicePreview: {
+        padding: '25px',
+        background: currentTheme.cardBackground
+      },
+      learnMoreLink: {
+        color: currentTheme.buttonColor,
+        fontWeight: '600',
+        marginTop: '15px',
+        display: 'inline-block',
+        transition: 'all 0.3s ease',
+        ':hover': {
+          transform: 'translateX(5px)'
+        }
+      },
+      productsGrid: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '30px',
+        maxWidth: '1200px',
+        margin: '0 auto'
+      },
+      productCard: {
+        background: currentTheme.cardBackground,
+        borderRadius: '8px',
+        overflow: 'hidden',
+        boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
+        transition: 'all 0.3s ease',
+        cursor: 'pointer',
+        ':hover': {
+          transform: 'translateY(-10px)',
+          boxShadow: '0 15px 30px rgba(0,0,0,0.15)'
+        }
+      },
+      productImageContainer: {
+        height: '200px',
+        overflow: 'hidden',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: darkMode ? '#3a3a3a' : '#f5f5f5'
+      },
+      productImage: {
+        maxWidth: '100%',
+        maxHeight: '100%',
+        objectFit: 'contain',
+        padding: '20px'
+      },
+      productInfo: {
+        padding: '25px'
+      },
+      productTitle: {
+        color: currentTheme.buttonColor,
+        margin: '0 0 10px 0'
+      },
+      productDescription: {
+        margin: '0 0 15px 0',
+        color: currentTheme.textColor
+      },
+      viewDetails: {
+        color: '#0288d1',
+        fontWeight: '600',
+        transition: 'all 0.3s ease',
+        ':hover': {
+          transform: 'translateX(5px)'
+        }
+      },
+      industriesGrid: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '25px',
+        maxWidth: '1000px',
+        margin: '0 auto'
+      },
+      industryCard: {
+        padding: '30px 20px',
+        borderRadius: '8px',
+        color: 'white',
+        textAlign: 'center',
+        transition: 'all 0.3s ease',
+        boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
+        ':hover': {
+          transform: 'translateY(-10px)',
+          boxShadow: '0 15px 30px rgba(0,0,0,0.2)'
+        }
+      },
+      industryIcon: {
+        fontSize: '2.5rem',
+        marginBottom: '15px'
+      },
+      clientCarousel: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '30px',
+        maxWidth: '1000px',
+        margin: '0 auto'
+      },
+      clientCard: {
+        background: currentTheme.cardBackground,
+        padding: '30px',
+        borderRadius: '8px',
+        boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
+        transition: 'all 0.3s ease',
+        cursor: 'pointer',
+        ':hover': {
+          transform: 'translateY(-10px)',
+          boxShadow: '0 15px 30px rgba(0,0,0,0.15)'
+        }
+      },
+      readTestimonial: {
+        color: '#0288d1',
+        fontWeight: '600',
+        marginTop: '15px',
+        display: 'inline-block',
+        transition: 'all 0.3s ease',
+        ':hover': {
+          transform: 'translateX(5px)'
+        }
+      },
+      contactContainer: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '40px',
+        maxWidth: '1200px',
+        margin: '0 auto'
+      },
+      mapContainer: {
+        flex: 1,
+        minWidth: '300px',
+        height: '450px',
+        borderRadius: '8px',
+        overflow: 'hidden',
+        boxShadow: '0 5px 15px rgba(0,0,0,0.1)'
+      },
     formContainer: {
       flex: 1,
       minWidth: '300px'
@@ -647,163 +658,163 @@ function Home() {
       color: currentTheme.textColor
     },
     modalOverlay: {
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(0,0,0,0.8)',
-      zIndex: 2000,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '20px',
-      animation: 'fadeIn 0.3s ease'
-    },
-    modalContent: {
-      background: currentTheme.cardBackground,
-      borderRadius: '8px',
-      maxWidth: '800px',
-      width: '90%',
-      maxHeight: '90vh',
-      overflowY: 'auto',
-      padding: '40px',
-      position: 'relative',
-      boxShadow: '0 5px 30px rgba(0,0,0,0.3)',
-      animation: 'slideUp 0.4s ease',
-      color: currentTheme.textColor
-    },
-    closeButton: {
-      position: 'absolute',
-      top: '15px',
-      right: '15px',
-      background: 'none',
-      border: 'none',
-      fontSize: '1.8rem',
-      cursor: 'pointer',
-      color: currentTheme.textColor,
-      transition: 'all 0.3s ease',
-      ':hover': {
-        color: currentTheme.buttonColor,
-        transform: 'scale(1.1)'
-      }
-    },
-    modalTitle: {
-      color: currentTheme.buttonColor,
-      marginBottom: '25px',
-      paddingRight: '30px'
-    },
-    modalBody: {
-      lineHeight: '1.8'
-    },
-    productImageGallery: {
-      display: 'flex',
-      gap: '20px',
-      overflowX: 'auto',
-      paddingBottom: '20px',
-      marginBottom: '25px',
-      scrollbarWidth: 'thin',
-      scrollbarColor: '#d32f2f #f5f5f5',
-      '::-webkit-scrollbar': {
-        height: '8px'
-      },
-      '::-webkit-scrollbar-track': {
-        background: '#f5f5f5'
-      },
-      '::-webkit-scrollbar-thumb': {
-        background: '#d32f2f',
-        borderRadius: '4px'
-      }
-    },
-    modalProductImage: {
-      maxHeight: '300px',
-      maxWidth: '100%',
-      objectFit: 'contain',
-      borderRadius: '4px',
-      boxShadow: '0 3px 10px rgba(0,0,0,0.1)'
-    },
-    featureList: {
-      paddingLeft: '20px',
-      margin: '20px 0',
-      color: currentTheme.textColor
-    },
-    '@media (max-width: 1024px)': {
-      section: {
-        padding: '80px 20px'
-      },
-      mainHeading: {
-        fontSize: '2.5rem'
-      },
-      subHeading: {
-        fontSize: '2rem'
-      },
-      sectionTitle: {
-        fontSize: '2.2rem'
-      }
-    },
-    '@media (max-width: 768px)': {
-      mainHeading: {
-        fontSize: '2.2rem'
-      },
-      subHeading: {
-        fontSize: '1.8rem'
-      },
-      sectionTitle: {
-        fontSize: '2rem'
-      },
-      aboutContainer: {
-        flexDirection: 'column-reverse'
-      },
-      aboutContent: {
-        minWidth: '100%'
-      },
-      servicesGrid: {
-        gridTemplateColumns: '1fr'
-      },
-      productsGrid: {
-        gridTemplateColumns: '1fr'
-      },
-      industriesGrid: {
-        gridTemplateColumns: 'repeat(2, 1fr)'
-      },
-      contactContainer: {
-        flexDirection: 'column'
-      },
-      mapContainer: {
-        height: '350px'
-      }
-    },
-    '@media (max-width: 480px)': {
-      mainHeading: {
-        fontSize: '1.8rem'
-      },
-      subHeading: {
-        fontSize: '1.5rem'
-      },
-      sectionTitle: {
-        fontSize: '1.8rem'
-      },
-      industriesGrid: {
-        gridTemplateColumns: '1fr'
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0,0,0,0.8)',
+        zIndex: 2000,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '20px',
+        animation: 'fadeIn 0.3s ease'
       },
       modalContent: {
-        padding: '30px 20px'
-      }
-    },
-    '@keyframes fadeIn': {
-      from: { opacity: 0 },
-      to: { opacity: 1 }
-    },
-    '@keyframes slideUp': {
-      from: { 
-        opacity: 0,
-        transform: 'translateY(20px)'
+        background: currentTheme.cardBackground,
+        borderRadius: '8px',
+        maxWidth: '800px',
+        width: '90%',
+        maxHeight: '90vh',
+        overflowY: 'auto',
+        padding: '40px',
+        position: 'relative',
+        boxShadow: '0 5px 30px rgba(0,0,0,0.3)',
+        animation: 'slideUp 0.4s ease',
+        color: currentTheme.textColor
       },
-      to: { 
-        opacity: 1,
-        transform: 'translateY(0)'
+      closeButton: {
+        position: 'absolute',
+        top: '15px',
+        right: '15px',
+        background: 'none',
+        border: 'none',
+        fontSize: '1.8rem',
+        cursor: 'pointer',
+        color: currentTheme.textColor,
+        transition: 'all 0.3s ease',
+        ':hover': {
+          color: currentTheme.buttonColor,
+          transform: 'scale(1.1)'
+        }
+      },
+      modalTitle: {
+        color: currentTheme.buttonColor,
+        marginBottom: '25px',
+        paddingRight: '30px'
+      },
+      modalBody: {
+        lineHeight: '1.8'
+      },
+      productImageGallery: {
+        display: 'flex',
+        gap: '20px',
+        overflowX: 'auto',
+        paddingBottom: '20px',
+        marginBottom: '25px',
+        scrollbarWidth: 'thin',
+        scrollbarColor: '#d32f2f #f5f5f5',
+        '::-webkit-scrollbar': {
+          height: '8px'
+        },
+        '::-webkit-scrollbar-track': {
+          background: '#f5f5f5'
+        },
+        '::-webkit-scrollbar-thumb': {
+          background: '#d32f2f',
+          borderRadius: '4px'
+        }
+      },
+      modalProductImage: {
+        maxHeight: '300px',
+        maxWidth: '100%',
+        objectFit: 'contain',
+        borderRadius: '4px',
+        boxShadow: '0 3px 10px rgba(0,0,0,0.1)'
+      },
+      featureList: {
+        paddingLeft: '20px',
+        margin: '20px 0',
+        color: currentTheme.textColor
+      },
+      '@media (max-width: 1024px)': {
+        section: {
+          padding: '80px 20px'
+        },
+        mainHeading: {
+          fontSize: '2.5rem'
+        },
+        subHeading: {
+          fontSize: '2rem'
+        },
+        sectionTitle: {
+          fontSize: '2.2rem'
+        }
+      },
+      '@media (max-width: 768px)': {
+        mainHeading: {
+          fontSize: '2.2rem'
+        },
+        subHeading: {
+          fontSize: '1.8rem'
+        },
+        sectionTitle: {
+          fontSize: '2rem'
+        },
+        aboutContainer: {
+          flexDirection: 'column-reverse'
+        },
+        aboutContent: {
+          minWidth: '100%'
+        },
+        servicesGrid: {
+          gridTemplateColumns: '1fr'
+        },
+        productsGrid: {
+          gridTemplateColumns: '1fr'
+        },
+        industriesGrid: {
+          gridTemplateColumns: 'repeat(2, 1fr)'
+        },
+        contactContainer: {
+          flexDirection: 'column'
+        },
+        mapContainer: {
+          height: '350px'
+        }
+      },
+      '@media (max-width: 480px)': {
+        mainHeading: {
+          fontSize: '1.8rem'
+        },
+        subHeading: {
+          fontSize: '1.5rem'
+        },
+        sectionTitle: {
+          fontSize: '1.8rem'
+        },
+        industriesGrid: {
+          gridTemplateColumns: '1fr'
+        },
+        modalContent: {
+          padding: '30px 20px'
+        }
+      },
+      '@keyframes fadeIn': {
+        from: { opacity: 0 },
+        to: { opacity: 1 }
+      },
+      '@keyframes slideUp': {
+        from: { 
+          opacity: 0,
+          transform: 'translateY(20px)'
+        },
+        to: { 
+          opacity: 1,
+          transform: 'translateY(0)'
+        }
       }
-    }
   };
 
   return (
@@ -816,9 +827,9 @@ function Home() {
         {darkMode ? <FiSun /> : <FiMoon />}
       </button>
 
-      {/* Welcome Section with Slideshow */}
+      {/* Welcome Section */}
       <section id="welcome" style={{ ...styles.section, ...styles.welcomeSection }}>
-        <div style={styles.slideshowContainer}>
+      <div style={styles.slideshowContainer}>
           {backgroundImages.map((img, index) => (
             <div 
               key={index}
@@ -854,7 +865,7 @@ function Home() {
 
       {/* About Section */}
       <section id="about" style={{ ...styles.section, backgroundColor: currentTheme.sectionBackground }}>
-        <h2 style={styles.sectionTitle}>Who We Are</h2>
+      <h2 style={styles.sectionTitle}>Who We Are</h2>
         <div style={styles.aboutContainer}>
           <div style={styles.aboutContent}>
             <p>
@@ -881,7 +892,7 @@ function Home() {
 
       {/* Services Section */}
       <section id="services" style={{ ...styles.section, backgroundColor: currentTheme.backgroundColor }}>
-        <h2 style={styles.sectionTitle}>Our Services</h2>
+      <h2 style={styles.sectionTitle}>Our Services</h2>
         <div style={styles.servicesGrid}>
           {services.map((service, index) => (
             <div 
@@ -917,7 +928,7 @@ function Home() {
 
       {/* Products Section */}
       <section id="products" style={{ ...styles.section, backgroundColor: currentTheme.sectionBackground }}>
-        <h2 style={styles.sectionTitle}>Our Products</h2>
+      <h2 style={styles.sectionTitle}>Our Products</h2>
         <div style={styles.productsGrid}>
           {products.map((product, index) => (
             <div 
@@ -968,7 +979,7 @@ function Home() {
 
       {/* Industries Section */}
       <section id="industries" style={{ ...styles.section, backgroundColor: currentTheme.backgroundColor }}>
-        <h2 style={styles.sectionTitle}>Industries We Serve</h2>
+      <h2 style={styles.sectionTitle}>Industries We Serve</h2>
         <div style={styles.industriesGrid}>
           {industries.map((industry, index) => (
             <div 
@@ -988,7 +999,7 @@ function Home() {
 
       {/* Clients Section */}
       <section id="clients" style={{ ...styles.section, backgroundColor: currentTheme.sectionBackground }}>
-        <h2 style={styles.sectionTitle}>Our Clients</h2>
+      <h2 style={styles.sectionTitle}>Our Clients</h2>
         <div style={styles.clientCarousel}>
           {clients.map((client, index) => (
             <div 
@@ -1015,7 +1026,7 @@ function Home() {
         </div>
       </section>
 
-      {/* Contact Section */}
+      {/* Contact Section with Updated Form */}
       <section id="contact" style={{ ...styles.section, backgroundColor: currentTheme.backgroundColor }}>
         <h2 style={styles.sectionTitle}>Contact Us</h2>
         <div style={styles.contactContainer}>
@@ -1032,36 +1043,66 @@ function Home() {
             ></iframe>
           </div>
           <div style={styles.formContainer}>
-            <form>
-              <input 
-                type="text" 
-                placeholder="Your Name" 
-                style={styles.formInput}
-                required
-              />
-              <input 
-                type="email" 
-                placeholder="Your Email" 
-                style={styles.formInput}
-                required
-              />
-              <input 
-                type="tel" 
-                placeholder="Your Phone" 
-                style={styles.formInput}
-              />
-              <textarea 
-                placeholder="Your Message" 
-                style={styles.formTextarea}
-                required
-              ></textarea>
-              <button 
-                type="submit" 
-                style={styles.submitButton}
-              >
-                Send Message
-              </button>
-            </form>
+            {submitted ? (
+              <div style={{ 
+                backgroundColor: '#4CAF50',
+                color: 'white',
+                padding: '20px',
+                borderRadius: '8px',
+                textAlign: 'center',
+                marginBottom: '20px'
+              }}>
+                Thank you for your message! We'll get back to you soon.
+              </div>
+            ) : (
+              <form onSubmit={handleFormSubmit}>
+                <input 
+                  type="text" 
+                  name="name"
+                  placeholder="Your Name" 
+                  style={styles.formInput}
+                  value={formData.name}
+                  onChange={handleFormChange}
+                  required
+                />
+                <input 
+                  type="email" 
+                  name="email"
+                  placeholder="Your Email" 
+                  style={styles.formInput}
+                  value={formData.email}
+                  onChange={handleFormChange}
+                  required
+                />
+                <input 
+                  type="tel" 
+                  name="phone"
+                  placeholder="Your Phone" 
+                  style={styles.formInput}
+                  value={formData.phone}
+                  onChange={handleFormChange}
+                />
+                <textarea 
+                  name="message"
+                  placeholder="Your Message" 
+                  style={styles.formTextarea}
+                  value={formData.message}
+                  onChange={handleFormChange}
+                  required
+                ></textarea>
+                {error && <div style={{ 
+                  color: '#f44336',
+                  marginBottom: '15px',
+                  textAlign: 'center'
+                }}>{error}</div>}
+                <button 
+                  type="submit" 
+                  style={styles.submitButton}
+                >
+                  Send Message
+                </button>
+              </form>
+            )}
             <div style={styles.contactInfo}>
               <p><strong>Address:</strong> "Shakti" Plot No.73, Auditor Housing Society, Jalgaon Road, Chh. Sambhajinagar, 431003</p>
               <p><strong>Phone:</strong> Shankar Kinge - 9822315028, Gajanan Narkhede - 9881391966, Kaushal Kinge - 8055560185</p>
