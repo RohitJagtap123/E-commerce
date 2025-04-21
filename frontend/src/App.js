@@ -8,11 +8,12 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import Products from "./pages/Products";
 
 // Create a wrapper component to handle header visibility
 const LayoutWrapper = ({ children, isLoggedIn }) => {
   const location = useLocation();
-  const showHeader = !['/login'].includes(location.pathname);
+  const showHeader = !['/login', '/admin-dashboard'].includes(location.pathname);
 
   return (
     <>
@@ -55,6 +56,8 @@ function App() {
                 {/* Public routes */}
                 <Route path="/" element={isLoggedIn ? <Navigate to="/admin-dashboard" /> : <Home />} />
                 <Route path="/login" element={<Login />} />
+
+                <Route path="/products" element={<Products />} />
 
                 {/* Protected routes */}
                 <Route

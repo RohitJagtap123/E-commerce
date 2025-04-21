@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-scroll';
+import ServiceButton from './ServiceButton'
 import shaktiLogo from '../assets/shakti full logo trac.png';
 
 function Header({ currentSection }) {
@@ -17,7 +18,6 @@ function Header({ currentSection }) {
   const navItems = [
     { id: 'welcome', label: 'Home' },
     { id: 'about', label: 'About Us' },
-    { id: 'services', label: 'Services' },
     { id: 'products', label: 'Products' },
     { id: 'industries', label: 'Industries' },
     { id: 'clients', label: 'Clients' },
@@ -75,6 +75,8 @@ function Header({ currentSection }) {
           transition: 'color 0.3s ease'
         }}>Shakti Electrotech</span>
       </div>
+
+    
       
       {/* Desktop Navigation */}
       <nav style={{
@@ -85,6 +87,8 @@ function Header({ currentSection }) {
           display: 'none'
         }
       }}>
+        <ServiceButton>
+        </ServiceButton>
         {navItems.map((item) => (
           <Link
             key={item.id}
@@ -129,6 +133,7 @@ function Header({ currentSection }) {
             }}></span>
           </Link>
         ))}
+
         <a 
           href="/login" 
           style={{
@@ -299,6 +304,7 @@ function Header({ currentSection }) {
             {item.label}
           </Link>
         ))}
+        
         <a 
           href="/login" 
           style={{

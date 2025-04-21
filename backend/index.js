@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
+const productRoutes = require('./routes/productRoutes');
 // Initialize Express app
 const app = express();
 
@@ -42,6 +42,11 @@ app.post('/api/submissions', async (req, res) => {
     res.status(400).send({ error: error.message });
   }
 });
+
+
+app.use(cors()); // Enable CORS if frontend is on another domain
+app.use(express.json());
+app.use('/api/products', productRoutes);
 
 // Get all submissions (no auth needed since you're handling auth in frontend)
 app.get('/api/submissions', async (req, res) => {

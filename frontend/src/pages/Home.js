@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-scroll';
 import { FiSun, FiMoon } from 'react-icons/fi';
 import axios from 'axios';
+import {useNavigate} from 'react-router-dom'
+
 
 // Import all product images
 import andonControl1 from '../assets/andon control 1.jpg';
@@ -23,12 +25,25 @@ import hmiTouchScreen from '../assets/hmi touch screen 1.png';
 import solarEnergyMeter from '../assets/solar energy meter 1.png';
 import fuelGaugeUnit from '../assets/fuel gaege testing unit big .png';
 
+import research from '../assets/research.png'
+import renewable from '../assets/renewable.png'
+import healthcare from '../assets/healthcare.png'
+import power from '../assets/power.png'
+import food from '../assets/food.png'
+import pharmaceutical from '../assets/pharmaceutical.png'
+import automotive from '../assets/automotive.png'
+import manufacturing from '../assets/manufacturing.png'
+
 // Background images for slideshow
 import bg1 from '../assets/hmi touch screen 1.png';
 import bg2 from '../assets/mhms 5.png';
 import bg3 from '../assets/solar energy meter 1.png';
 import bg4 from '../assets/fuel gaege testing unit big .png';
 import bg5 from '../assets/andon control 1.jpg';
+import ExploreMoreButton from '../components/ExploreMoreButton';
+import WelcomeSection from '../components/WelcomeSection';
+import IndustriesCard from '../components/IndustriesCard';
+import ProductCard from '../components/ProductCard';
 
 function Home() {
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
@@ -42,6 +57,7 @@ function Home() {
     phone: '',
     message: ''
   });
+  const [products, setProducts] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
@@ -112,74 +128,6 @@ function Home() {
       }
   ];
 
-  const products = [
-    {
-      title: "Andon Control System",
-      description: "Real-time monitoring solution for production lines with stoppage logging and analysis.",
-      features: [
-        "Real-time Monitoring of conveyor status",
-        "Stoppage Logging with duration tracking",
-        "Accountability Tracking for operators"
-      ],
-      images: [andonControl1]
-    },
-    {
-        title: "Continuity Testing Unit",
-        description: "Advanced testing solution for electrical circuits with multiple configurations.",
-        features: [
-          "Multiple testing modes (9X9, 4X4, 2X2)",
-          "Precision measurement capabilities",
-          "Robust industrial design",
-          "Easy-to-use interface"
-        ],
-        images: [continuityUnit1, continuityUnit2]
-      },
-      {
-        title: "Data Loggers System",
-        description: "Advanced data acquisition for industrial monitoring.",
-        features: [
-          "Multi-sensor support (temp, pressure, etc.)",
-          "High-capacity data storage",
-          "Trend analysis capabilities",
-          "Industrial-grade reliability"
-        ],
-        images: [dataLogger16Ch, dataLogger]
-      },
-      {
-        title: "Machine Health Monitoring",
-        description: "Predictive maintenance system for industrial equipment.",
-        features: [
-          "Real-time parameter monitoring",
-          "Early fault detection",
-          "Maintenance alerts",
-          "Performance analytics"
-        ],
-        images: [mhmsDashboard, mhmsSystem]
-      },
-      {
-        title: "Medical Emergency System",
-        description: "Code Blue emergency response system for healthcare facilities.",
-        features: [
-          "Rapid activation with call points",
-          "Real-time alerting system",
-          "Response time tracking",
-          "Hospital-wide integration"
-        ],
-        images: [medicalCallPoint, medicalEmergencyPoint]
-      },
-      {
-        title: "VLT & IR Rejection Meter",
-        description: "Precision measurement device for optical properties.",
-        features: [
-          "Accurate visible light transmission measurement",
-          "Infrared rejection testing",
-          "Easy operation with hold function",
-          "Industrial-grade construction"
-        ],
-        images: [vltMeter]
-      }
-  ];
-
   const clients = [
     {
       name: "Bajaj Auto Limited",
@@ -199,15 +147,17 @@ function Home() {
   ];
 
   const industries = [
-    { name: "Manufacturing", icon: "🏭", description: "Custom automation for production lines" },
-    { name: "Automotive", icon: "🚗", description: "Robotics and assembly line solutions" },
-    { name: "Pharmaceutical", icon: "💊", description: "Precision control for sensitive processes" },
-    { name: "Food Processing", icon: "🍔", description: "Hygienic and efficient automation" },
-    { name: "Power & Energy", icon: "⚡", description: "Reliable control for critical systems" },
-    { name: "Healthcare", icon: "🏥", description: "Medical equipment control systems" },
-    { name: "Renewable Energy", icon: "🌞", description: "Solar monitoring solutions" },
-    { name: "R&D Labs", icon: "🔬", description: "Specialized testing equipment" }
+    { name: "Manufacturing", icon: manufacturing, description: "Custom automation for production lines" },
+    { name: "Automotive", icon: automotive, description: "Robotics and assembly line solutions" },
+    { name: "Pharmaceutical", icon: pharmaceutical, description: "Precision control for sensitive processes" },
+    { name: "Food Processing", icon: food, description: "Hygienic and efficient automation" },
+    { name: "Power & Energy", icon: power, description: "Reliable control for critical systems" },
+    { name: "Healthcare", icon: healthcare, description: "Medical equipment control systems" },
+    { name: "Renewable Energy", icon: renewable, description: "Solar monitoring solutions" },
+    { name: "R&D Labs", icon: research, description: "Specialized testing equipment" }
   ];
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -225,6 +175,20 @@ function Home() {
   const closeModal = () => {
     setIsModalOpen(false);
     document.body.style.overflow = 'auto';
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/products/frontpage");
+      // console.log(res);
+      setProducts(res.data);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    }
   };
 
   const handleFormChange = (e) => {
@@ -269,6 +233,10 @@ function Home() {
       buttonColor: '#ff5252'
     }
   };
+
+  const handleNavigateToProduct = ()=>{
+    navigate('/products')
+  }
 
   const currentTheme = darkMode ? themeStyles.dark : themeStyles.light;
 
@@ -423,6 +391,7 @@ function Home() {
         width: '100%',
         maxWidth: '400px',
         height: 'auto',
+        padding: '130px',
         objectFit: 'contain',
         borderRadius: '8px',
         boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
@@ -538,8 +507,8 @@ function Home() {
       industriesGrid: {
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '25px',
-        maxWidth: '1000px',
+        gap: '30px 70px',
+        maxWidth: '1200px',
         margin: '0 auto'
       },
       industryCard: {
@@ -828,40 +797,7 @@ function Home() {
       </button>
 
       {/* Welcome Section */}
-      <section id="welcome" style={{ ...styles.section, ...styles.welcomeSection }}>
-      <div style={styles.slideshowContainer}>
-          {backgroundImages.map((img, index) => (
-            <div 
-              key={index}
-              style={{
-                ...styles.slideshowImage,
-                backgroundImage: `url(${img})`,
-                opacity: index === currentBgIndex ? 1 : 0,
-                zIndex: 1
-              }}
-            />
-          ))}
-          <div style={styles.slideshowOverlay}></div>
-        </div>
-        <div style={styles.welcomeContent}>
-          <img 
-            src={shaktiLogo} 
-            alt="Shakti Electrotech Logo" 
-            style={styles.logoImage} 
-          />
-          <h1 style={styles.mainHeading}>YOU JUST THINK</h1>
-          <h2 style={styles.subHeading}>WE WILL DO IT</h2>
-          <Link
-            to="about"
-            spy={true}
-            smooth={true}
-            duration={500}
-            style={styles.learnMoreButton}
-          >
-            More about us
-          </Link>
-        </div>
-      </section>
+      <WelcomeSection></WelcomeSection>
 
       {/* About Section */}
       <section id="about" style={{ ...styles.section, backgroundColor: currentTheme.sectionBackground }}>
@@ -890,90 +826,14 @@ function Home() {
         </div>
       </section>
 
-      {/* Services Section */}
-      <section id="services" style={{ ...styles.section, backgroundColor: currentTheme.backgroundColor }}>
-      <h2 style={styles.sectionTitle}>Our Services</h2>
-        <div style={styles.servicesGrid}>
-          {services.map((service, index) => (
-            <div 
-              key={index}
-              style={styles.serviceCard}
-              onClick={() => openModal({
-                type: 'service',
-                title: service.title,
-                content: (
-                  <>
-                    <p>{service.description}</p>
-                    <ul style={styles.featureList}>
-                      {service.features.map((feature, i) => (
-                        <li key={i}>{feature}</li>
-                      ))}
-                    </ul>
-                  </>
-                )
-              })}
-            >
-              <div style={styles.serviceHeader}>
-                <div style={styles.serviceIcon}>{service.icon}</div>
-                <h3 style={styles.serviceTitle}>{service.title}</h3>
-              </div>
-              <div style={styles.servicePreview}>
-                <p>{service.description.substring(0, 100)}...</p>
-                <div style={styles.learnMoreLink}>Click to learn more →</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* Products Section */}
       <section id="products" style={{ ...styles.section, backgroundColor: currentTheme.sectionBackground }}>
       <h2 style={styles.sectionTitle}>Our Products</h2>
         <div style={styles.productsGrid}>
           {products.map((product, index) => (
-            <div 
-              key={index}
-              style={styles.productCard}
-              onClick={() => openModal({
-                type: 'product',
-                title: product.title,
-                content: (
-                  <>
-                    <div style={styles.productImageGallery}>
-                      {product.images.map((img, imgIndex) => (
-                        <img 
-                          key={imgIndex}
-                          src={img} 
-                          alt={`${product.title} ${imgIndex + 1}`}
-                          style={styles.modalProductImage}
-                        />
-                      ))}
-                    </div>
-
-                    <p>{product.description}</p>
-                    <ul style={styles.featureList}>
-                      {product.features.map((feature, i) => (
-                        <li key={i}>{feature}</li>
-                      ))}
-                    </ul>
-                  </>
-                )
-              })}
-            >
-              <div style={styles.productImageContainer}>
-                <img 
-                  src={product.images[0]} 
-                  alt={product.title}
-                  style={styles.productImage}
-                />
-              </div>
-              <div style={styles.productInfo}>
-                <h3 style={styles.productTitle}>{product.title}</h3>
-                <p style={styles.productDescription}>{product.description.substring(0, 80)}...</p>
-                <div style={styles.viewDetails}>View Details →</div>
-              </div>
-            </div>
+             <ProductCard product={product}></ProductCard>
           ))}
+        <ExploreMoreButton onclick={()=>handleNavigateToProduct()}></ExploreMoreButton>
         </div>
       </section>
 
@@ -982,17 +842,7 @@ function Home() {
       <h2 style={styles.sectionTitle}>Industries We Serve</h2>
         <div style={styles.industriesGrid}>
           {industries.map((industry, index) => (
-            <div 
-              key={index}
-              style={{
-                ...styles.industryCard,
-                background: `hsl(${index * 60}, 70%, 45%)`
-              }}
-            >
-              <div style={styles.industryIcon}>{industry.icon}</div>
-              <h3 style={{ margin: '0 0 10px 0', fontSize: '1.3rem' }}>{industry.name}</h3>
-              <p style={{ margin: 0, fontSize: '0.9rem' }}>{industry.description}</p>
-            </div>
+            <IndustriesCard imageSrc={industry.icon} heading={industry.name} subheading={industry.description} ></IndustriesCard>
           ))}
         </div>
       </section>
@@ -1112,6 +962,7 @@ function Home() {
           </div>
         </div>
       </section>
+
 
       {/* Modal Component */}
       {isModalOpen && (

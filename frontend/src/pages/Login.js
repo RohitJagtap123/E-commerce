@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import shaktiLogo from "../assets/shakti full logo trac.png"; // Make sure to import your logo
+import "../App.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
